@@ -206,12 +206,12 @@ echo "spark.jars /home/vagrant/Agile_Data_Code_2/lib/mongo-hadoop-spark-2.0.2.ja
 #
 # Kafka install and setup
 #
-echo "curl -sLko /tmp/kafka_2.11-0.10.1.1.tgz http://www-us.apache.org/dist/kafka/0.10.1.1/kafka_2.11-0.10.1.1.tgz"
-curl -sLko /tmp/kafka_2.11-0.10.1.1.tgz http://www-us.apache.org/dist/kafka/0.10.1.1/kafka_2.11-0.10.1.1.tgz
+echo "curl -sLko /tmp/kafka_2.11-1.0.0.tgz http://www-us.apache.org/dist/kafka/0.10.1.1/kafka_2.11-1.0.0.tgz"
+curl -sLko /tmp/kafka_2.11-1.0.0.tgz http://www-us.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz
 mkdir -p /home/vagrant/kafka
 cd /home/vagrant/
-tar -xvzf /tmp/kafka_2.11-0.10.1.1.tgz -C kafka --strip-components=1 && rm -f /tmp/kafka_2.11-0.10.1.1.tgz
-rm -f /tmp/kafka_2.11-0.10.1.1.tgz
+tar -xvzf /tmp/kafka_2.11-1.0.0.tgz -C kafka --strip-components=1 && rm -f /tmp/kafka_2.11-1.0.0.tgz
+rm -f /tmp/kafka_2.11-1.0.0.tgz
 
 # Set the log dir to kafka/logs
 sed -i '/log.dirs=\/tmp\/kafka-logs/c\log.dirs=logs' /home/vagrant/kafka/config/server.properties
@@ -242,10 +242,10 @@ airflow webserver -D &
 airflow scheduler -D &
 
 # Install Apache Zeppelin
-echo "curl -sLko /tmp/zeppelin-0.7.0-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz"
-curl -sLko /tmp/zeppelin-0.7.0-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.0/zeppelin-0.7.0-bin-all.tgz
+echo "curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz"
+curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
 mkdir zeppelin
-tar -xvzf /tmp/zeppelin-0.7.0-bin-all.tgz -C zeppelin --strip-components=1
+tar -xvzf /tmp/zeppelin-0.7.3-bin-all.tgz -C zeppelin --strip-components=1
 
 # Configure Zeppelin
 cp zeppelin/conf/zeppelin-env.sh.template zeppelin/conf/zeppelin-env.sh
