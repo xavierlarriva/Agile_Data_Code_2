@@ -100,8 +100,8 @@ echo 'export PATH=$PATH:$SPARK_HOME/bin' | sudo tee -a /home/vagrant/.bash_profi
 cp /home/vagrant/spark/conf/spark-defaults.conf.template /home/vagrant/spark/conf/spark-defaults.conf
 echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | sudo tee -a /home/vagrant/spark/conf/spark-defaults.conf
 
-# Give Spark 25GB of RAM, use Python3
-echo "spark.driver.memory 6g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+# Give Spark 6GB of RAM, use Python3
+echo "spark.driver.memory 4g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "spark.executor.cores 2" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "PYSPARK_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 echo "PYSPARK_DRIVER_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
@@ -267,6 +267,15 @@ curl -Lko /tmp/janusgraph-0.2.0-hadoop2.zip \
 unzip -d . /tmp/janusgraph-0.2.0-hadoop2.zip
 mv janusgraph-0.2.0-hadoop2 janusgraph
 rm /tmp/janusgraph-0.2.0-hadoop2.zip
+
+# Jupyter server setup
+jupyter notebook --generate-config
+cp /home/vagrant/Agile_Data_Code_2/jupyter_notebook_config.py /home/vagrant/.jupyter/
+mkdir /home/vagrant/certs
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /home/vagrant/certs/mycert.pem -out /home/vagrant/certs/mycert.pem
+
+cd Agile_Data_Code_2
+jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
