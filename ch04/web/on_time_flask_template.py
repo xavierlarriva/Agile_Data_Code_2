@@ -8,6 +8,14 @@ import json
 from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
 
+from flask import request
+
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
 # Process elasticsearch hits and return flights records
 def process_search(results):
   records = []
@@ -166,6 +174,17 @@ def search_flights():
     tail_number=tail_number,
     flight_number=flight_number
     )
+
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
+@app.route('/shutdown')
+def shutdown():
+  shutdown_server()
+  return 'Server shutting down...'
 
 if __name__ == "__main__":
   app.run(
