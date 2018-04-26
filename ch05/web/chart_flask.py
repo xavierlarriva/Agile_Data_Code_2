@@ -78,4 +78,7 @@ def flights_per_airplane(tail_number):
   return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number)
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(
+    debug=True,
+    host='0.0.0.0'
+  )

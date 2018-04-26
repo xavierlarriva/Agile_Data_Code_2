@@ -524,4 +524,7 @@ def classify_flight_delays_realtime_response(unique_id):
   return json_util.dumps(response)
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(
+    debug=True,
+    host='0.0.0.0'
+  )
