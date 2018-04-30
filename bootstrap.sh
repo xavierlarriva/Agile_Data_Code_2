@@ -43,8 +43,9 @@ cd /home/vagrant/Agile_Data_Code_2
 export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2
 echo "export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2" | sudo tee -a /home/vagrant/.bash_profile
 conda install -y python=3.5
-conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
-pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark
+conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter cython
+pip install --upgrade pip
+pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark imongo-kernel
 sudo chown -R vagrant /home/vagrant/Agile_Data_Code_2
 sudo chgrp -R vagrant /home/vagrant/Agile_Data_Code_2
 cd /home/vagrant
@@ -115,15 +116,24 @@ sudo chown -R vagrant /home/vagrant/spark
 sudo chgrp -R vagrant /home/vagrant/spark
 
 #
-# Install MongoDB and dependencies
+# New MongoDB Install
 #
-sudo apt-get install -y mongodb
-sudo mkdir -p /data/db
-sudo chown -R mongodb /data/db
-sudo chgrp -R mongodb /data/db
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+sudo service mongod start
 
-# run MongoDB as daemon
-sudo systemctl start mongodb
+# #
+# # Install MongoDB and dependencies
+# #
+# sudo apt-get install -y mongodb
+# sudo mkdir -p /data/db
+# sudo chown -R mongodb /data/db
+# sudo chgrp -R mongodb /data/db
+
+# # run MongoDB as daemon
+# sudo systemctl start mongodb
 
 # Get the MongoDB Java Driver
 curl -Lko /home/vagrant/Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.2/mongo-java-driver-3.4.2.jar
@@ -274,8 +284,9 @@ cp /home/vagrant/Agile_Data_Code_2/jupyter_notebook_config.py /home/vagrant/.jup
 mkdir /home/vagrant/certs
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /home/vagrant/certs/mycert.pem -out /home/vagrant/certs/mycert.pem
 
-cd Agile_Data_Code_2
+cd /home/vagrant/Agile_Data_Code_2
 jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
+cd
 
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
