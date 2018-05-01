@@ -362,3 +362,5 @@ cd /home/ubuntu/Agile_Data_Code_2
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chgrp ubuntu ~/.bash_profile
 sudo chown ubuntu ~/.bash_profile
+sudo chown -R ubuntu Agile_Data_Code_2
+sudo chgrp -R ubuntu Agile_Data_Code_2
