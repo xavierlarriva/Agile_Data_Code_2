@@ -63,7 +63,7 @@ echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | 
 sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /home/ubuntu/.bash_profile
+echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" | tee -a /home/ubuntu/.bash_profile
 
 #
 # Install Miniconda
@@ -74,7 +74,7 @@ chmod +x /tmp/Miniconda3-latest-Linux-x86_64.sh
 /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /home/ubuntu/anaconda
 
 export PATH=/home/ubuntu/anaconda/bin:$PATH
-echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | tee -a /home/ubuntu/.bash_profile
 
 sudo chown -R ubuntu /home/ubuntu/anaconda
 sudo chgrp -R ubuntu /home/ubuntu/anaconda
@@ -87,10 +87,14 @@ echo "Cloning https://github.com/rjurney/Agile_Data_Code_2 repository and instal
 cd /home/ubuntu
 git clone https://github.com/rjurney/Agile_Data_Code_2
 cd /home/ubuntu/Agile_Data_Code_2
+git checkout training
 export PROJECT_HOME=/home/ubuntu/Agile_Data_Code_2
-echo "export PROJECT_HOME=/home/ubuntu/Agile_Data_Code_2" | sudo tee -a /home/ubuntu/.bash_profile
+echo "export PROJECT_HOME=/home/ubuntu/Agile_Data_Code_2" | tee -a /home/ubuntu/.bash_profile
 conda install -y python=3.5
+conda update -y -n base conda
+conda install -y tornado=4.5.3 # To deal with https://github.com/jupyter/notebook/issues/3544
 conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
+pip install --upgrade pip
 pip install -r requirements.txt
 sudo chown -R ubuntu /home/ubuntu/Agile_Data_Code_2
 sudo chgrp -R ubuntu /home/ubuntu/Agile_Data_Code_2
@@ -111,15 +115,15 @@ tar -xvf /tmp/hadoop-3.0.1.tar.gz -C hadoop --strip-components=1
 
 echo "Configuring Hadoop 3.0.1 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
-echo '# Hadoop environment setup' | sudo tee -a /home/ubuntu/.bash_profile
+echo '# Hadoop environment setup' | tee -a /home/ubuntu/.bash_profile
 export HADOOP_HOME=/home/ubuntu/hadoop
-echo 'export HADOOP_HOME=/home/ubuntu/hadoop' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export HADOOP_HOME=/home/ubuntu/hadoop' | tee -a /home/ubuntu/.bash_profile
 export PATH=$PATH:$HADOOP_HOME/bin
-echo 'export PATH=$PATH:$HADOOP_HOME/bin' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export PATH=$PATH:$HADOOP_HOME/bin' | tee -a /home/ubuntu/.bash_profile
 export HADOOP_CLASSPATH=$(hadoop classpath)
-echo 'export HADOOP_CLASSPATH=$(hadoop classpath)' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export HADOOP_CLASSPATH=$(hadoop classpath)' | tee -a /home/ubuntu/.bash_profile
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-echo 'export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop' | tee -a /home/ubuntu/.bash_profile
 
 # Give to ubuntu
 echo "Giving hadoop to user ubuntu ..." | tee -a $LOG_FILE
@@ -138,25 +142,25 @@ tar -xvf /tmp/spark-2.2.1-bin-without-hadoop.tgz -C spark --strip-components=1
 
 echo "Configuring Spark 2.2.1 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
-echo "# Spark environment setup" | sudo tee -a /home/ubuntu/.bash_profile
+echo "# Spark environment setup" | tee -a /home/ubuntu/.bash_profile
 export SPARK_HOME=/home/ubuntu/spark
-echo 'export SPARK_HOME=/home/ubuntu/spark' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export SPARK_HOME=/home/ubuntu/spark' | tee -a /home/ubuntu/.bash_profile
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop/
-echo 'export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop/' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop/' | tee -a /home/ubuntu/.bash_profile
 export SPARK_DIST_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`
-echo 'export SPARK_DIST_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export SPARK_DIST_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' | tee -a /home/ubuntu/.bash_profile
 export PATH=$PATH:$SPARK_HOME/bin
-echo 'export PATH=$PATH:$SPARK_HOME/bin' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export PATH=$PATH:$SPARK_HOME/bin' | tee -a /home/ubuntu/.bash_profile
 
 # Have to set spark.io.compression.codec in Spark local mode
 cp /home/ubuntu/spark/conf/spark-defaults.conf.template /home/ubuntu/spark/conf/spark-defaults.conf
-echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
+echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 
 # Give Spark 25GB of RAM, use Python3
-echo "spark.driver.memory 50g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
-echo "spark.executor.cores 12" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
-echo "PYSPARK_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
-echo "PYSPARK_DRIVER_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
+echo "spark.driver.memory 25g" | tee -a $SPARK_HOME/conf/spark-defaults.conf
+echo "spark.executor.cores 12" | tee -a $SPARK_HOME/conf/spark-defaults.conf
+echo "PYSPARK_PYTHON=python3" | tee -a $SPARK_HOME/conf/spark-env.sh
+echo "PYSPARK_DRIVER_PYTHON=python3" | tee -a $SPARK_HOME/conf/spark-env.sh
 
 # Setup log4j config to reduce logging output
 cp $SPARK_HOME/conf/log4j.properties.template $SPARK_HOME/conf/log4j.properties
@@ -168,18 +172,15 @@ sudo chown -R ubuntu /home/ubuntu/spark
 sudo chgrp -R ubuntu /home/ubuntu/spark
 
 #
-# Install MongoDB and dependencies
+# New MongoDB Install
 #
-echo "" | tee -a $LOG_FILE
-echo "Installing MongoDB via apt-get ..." | tee -a $LOG_FILE
-sudo apt-get install -y mongodb
-sudo mkdir -p /data/db
-sudo chown -R mongodb /data/db
-sudo chgrp -R mongodb /data/db
-
-# run MongoDB as daemon
-echo "Running MongoDB as a daemon ..." | tee -a $LOG_FILE
-sudo systemctl start mongodb
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+sudo systemctl start mongod | tee -a $LOG_FILE
+sudo systemctl status mongod | tee -a $LOG_FILE
+sudo systemctl enable mongod | tee -a $LOG_FILE
 
 # Get the MongoDB Java Driver
 echo "Fetching the MongoDB Java driver ..." | tee -a $LOG_FILE
@@ -208,33 +209,25 @@ cd /home/ubuntu/mongo-hadoop/spark/src/main/python
 python setup.py install
 cp /home/ubuntu/mongo-hadoop/spark/src/main/python/pymongo_spark.py /home/ubuntu/Agile_Data_Code_2/lib/
 export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME/lib
-echo "" | sudo tee -a /home/ubuntu/.bash_profile
-echo 'export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME/lib' | sudo tee -a /home/ubuntu/.bash_profile
+echo "" | tee -a /home/ubuntu/.bash_profile
+echo 'export PYTHONPATH=$PYTHONPATH:$PROJECT_HOME/lib' | tee -a /home/ubuntu/.bash_profile
 cd /home/ubuntu
 
 echo "Nuking the source to mongo-hadoop ..." | tee -a $LOG_FILE
 rm -rf /home/ubuntu/mongo-hadoop
 
 #
-# Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
+# Install Elasticsearch
 #
-echo "curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz"
-curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz
-mkdir /home/ubuntu/elasticsearch
-cd /home/ubuntu
-tar -xvzf /tmp/elasticsearch-5.2.1.tar.gz -C elasticsearch --strip-components=1
-sudo chown -R ubuntu /home/ubuntu/elasticsearch
-sudo chgrp -R ubuntu /home/ubuntu/elasticsearch
-sudo mkdir -p /home/ubuntu/elasticsearch/logs
-sudo chown -R ubuntu /home/ubuntu/elasticsearch/logs
-sudo chgrp -R ubuntu /home/ubuntu/elasticsearch/logs
-
-# Run elasticsearch
-sudo -u ubuntu /home/ubuntu/elasticsearch/bin/elasticsearch -d # re-run if you shutdown your computer
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
+sudo apt-get update && sudo apt-get install -y elasticsearch
+sudo update-rc.d elasticsearch defaults 95 10
+sudo -i service elasticsearch start
 
 # Run a query to test - it will error but should return json
 echo "Testing Elasticsearch with a query ..." | tee -a $LOG_FILE
-curl 'localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty'
+curl 'http://localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty'
 
 # Install Elasticsearch for Hadoop
 echo "" | tee -a $LOG_FILE
@@ -244,7 +237,7 @@ unzip /tmp/elasticsearch-hadoop-6.1.3.zip
 mv /home/ubuntu/elasticsearch-hadoop-6.1.3 /home/ubuntu/elasticsearch-hadoop
 cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-hadoop-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
 cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
-echo "spark.speculation false" | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
+echo "spark.speculation false" | tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 rm -f /tmp/elasticsearch-hadoop-6.1.3.zip
 rm -rf /home/ubuntu/elasticsearch-hadoop/conf/spark-defaults.conf
 
@@ -315,8 +308,8 @@ sudo chown -R ubuntu /home/ubuntu/airflow
 sudo chgrp -R ubuntu /home/ubuntu/airflow
 
 echo "Adding chown airflow commands to /home/ubuntu/.bash_profile ..." | tee -a $LOG_FILE
-echo "sudo chown -R ubuntu /home/ubuntu/airflow" | sudo tee -a /home/ubuntu/.bash_profile
-echo "sudo chgrp -R ubuntu /home/ubuntu/airflow" | sudo tee -a /home/ubuntu/.bash_profile
+echo "sudo chown -R ubuntu /home/ubuntu/airflow" | tee -a /home/ubuntu/.bash_profile
+echo "sudo chgrp -R ubuntu /home/ubuntu/airflow" | tee -a /home/ubuntu/.bash_profile
 
 # Jupyter server setup
 # echo "" | tee -a $LOG_FILE
@@ -326,6 +319,16 @@ echo "sudo chgrp -R ubuntu /home/ubuntu/airflow" | sudo tee -a /home/ubuntu/.bas
 # cd /home/ubuntu/Agile_Data_Code_2
 # jupyter-notebook --ip=0.0.0.0 &
 # cd
+
+# Jupyter server setup
+jupyter notebook --generate-config
+cp /home/ubuntu/Agile_Data_Code_2/jupyter_notebook_config.py /home/ubuntu/.jupyter/
+mkdir /home/ubuntu/certs
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /home/ubuntu/certs/mycert.pem -out /home/ubuntu/certs/mycert.pem
+
+cd /home/ubuntu/Agile_Data_Code_2
+jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
+cd
 
 # Install Ant to build Cassandra
 sudo apt-get install -y ant
@@ -339,7 +342,7 @@ git checkout cassandra-3.11
 ant
 bin/cassandra
 export PATH=$PATH:/home/ubuntu/cassandra/bin
-echo 'export PATH=$PATH:/home/ubuntu/cassandra/bin' | sudo tee -a /home/ubuntu/.bash_profile
+echo 'export PATH=$PATH:/home/ubuntu/cassandra/bin' | tee -a /home/ubuntu/.bash_profile
 cd ..
 
 # Install and setup JanusGraph
@@ -352,13 +355,10 @@ unzip -d . /tmp/janusgraph-0.2.0-hadoop2.zip
 mv janusgraph-0.2.0-hadoop2 janusgraph
 rm /tmp/janusgraph-0.2.0-hadoop2.zip
 
+# Download data
+cd /home/ubuntu/Agile_Data_Code_2
+./download.sh
+
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chgrp ubuntu ~/.bash_profile
 sudo chown ubuntu ~/.bash_profile
-
-#
-# Cleanup
-#
-echo "Cleaning up after our selves ..." | tee -a $LOG_FILE
-sudo apt-get clean
-sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
