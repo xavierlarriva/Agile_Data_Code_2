@@ -8,7 +8,7 @@ sudo chgrp -R vagrant /home/vagrant
 #
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
-    software-properties-common debconf-utils python-software-properties
+    software-properties-common debconf-utils python-software-properties apt-transport-https
 
 #
 # Install Java and setup ENV
@@ -40,6 +40,7 @@ sudo chgrp -R vagrant /home/vagrant/anaconda
 cd /home/vagrant
 git clone https://github.com/rjurney/Agile_Data_Code_2
 cd /home/vagrant/Agile_Data_Code_2
+git checkout training
 export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2
 echo "export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2" | sudo tee -a /home/vagrant/.bash_profile
 conda install -y python=3.5
@@ -124,17 +125,6 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 sudo service mongod start
 
-# #
-# # Install MongoDB and dependencies
-# #
-# sudo apt-get install -y mongodb
-# sudo mkdir -p /data/db
-# sudo chown -R mongodb /data/db
-# sudo chgrp -R mongodb /data/db
-
-# # run MongoDB as daemon
-# sudo systemctl start mongodb
-
 # Get the MongoDB Java Driver
 curl -Lko /home/vagrant/Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.2/mongo-java-driver-3.4.2.jar
 
@@ -164,21 +154,13 @@ cd /home/vagrant
 rm -rf /home/vagrant/mongo-hadoop
 
 #
-# Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
+# Install Elasticsearch
 #
-echo "curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz"
-curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz
-mkdir /home/vagrant/elasticsearch
-cd /home/vagrant
-tar -xvzf /tmp/elasticsearch-5.2.1.tar.gz -C elasticsearch --strip-components=1
-sudo chown -R vagrant /home/vagrant/elasticsearch
-sudo chgrp -R vagrant /home/vagrant/elasticsearch
-sudo mkdir -p /home/vagrant/elasticsearch/logs
-sudo chown -R vagrant /home/vagrant/elasticsearch/logs
-sudo chgrp -R vagrant /home/vagrant/elasticsearch/logs
-
-# Run elasticsearch
-sudo -u vagrant /home/vagrant/elasticsearch/bin/elasticsearch -d # re-run if you shutdown your computer
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
+sudo apt-get update && sudo apt-get install -y elasticsearch
+sudo update-rc.d elasticsearch defaults 95 10
+sudo -i service elasticsearch start
 
 # Run a query to test - it will error but should return json
 echo "Testing Elasticsearch with a query ..." | tee -a $LOG_FILE
@@ -287,6 +269,10 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /
 cd /home/vagrant/Agile_Data_Code_2
 jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 cd
+
+# Download data
+cd /home/vagrant/Agile_Data_Code_2
+./download.sh
 
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
