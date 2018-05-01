@@ -16,12 +16,19 @@ var chart = d3.select(".chart")
 d3.json("/total_flights.json", function(data) {
 
     // We define colors for the bars
-    var barColor = 'steelblue';
+    var defaultColor = 'steelblue';
+    var modeColor = '#4CA9F5';
     
     // We compute the maximum value for the bars, then set the domain for the y axis.
     // This means that y will now map from [0 -> maxY] to [height -> 0].
     var maxY = d3.max(data, function(d) { return d.total_flights; });
     y.domain([0, maxY]);
+
+    // Color the bar with the maximum value, the mode, differently
+    var varColor = function(d, i) {
+        if(d['total_flights'] == maxY) { return modeColor; }
+        else { return defaultColor; }
+    }
     
     // Divide the width by the number of bars to get the bar width
     var barWidth = width / data.length;
@@ -40,7 +47,7 @@ d3.json("/total_flights.json", function(data) {
         .attr("y", function(d) { return y(d.total_flights); })
         .attr("height", function(d) { return height - y(d.total_flights); })
         .attr("width", barWidth - 1)
-        .style("fill", barColor);
+        .style("fill", varColor);
 
     // We then label each bar with a the raw value in the top middle of the bar.
     // We offset the label by 3 to make it under the end of the bar, in the blue bit and we make it white
