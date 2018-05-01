@@ -15,7 +15,7 @@ var chart = d3.select(".chart")
 // We fetch the JSON from our controller, then process the resulting data
 d3.json("/total_flights.json", function(data) {
 
-    // We define colors for the bars
+    // We define colors for the bars - one for default, one for the mode
     var defaultColor = 'steelblue';
     var modeColor = '#4CA9F5';
     
@@ -43,6 +43,7 @@ d3.json("/total_flights.json", function(data) {
     
     // Now we define a rectangle for each container with the height mapped from the total_flights data point
     // to the y axis, and the width barWidth - 1 pixel. We will it with the bar color.
+    // Plug in varColor to color the mode's bar differently
     bar.append("rect")
         .attr("y", function(d) { return y(d.total_flights); })
         .attr("height", function(d) { return height - y(d.total_flights); })
