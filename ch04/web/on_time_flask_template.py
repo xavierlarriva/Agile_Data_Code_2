@@ -121,10 +121,7 @@ def search_flights():
         'must': []}
     },
     'sort': [
-      {'FlightDate': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'DepTime': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'Carrier': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'FlightNum': {'order': 'asc', 'ignore_unmapped' : True} },
+      {'FlightDate': 'asc' },
       '_score'
     ],
     'from': start,
@@ -146,9 +143,6 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
   
   # Query elasticsearch, process to get records and count
-  print("QUERY")
-  print(carrier, flight_date, origin, dest, tail_number, flight_number)
-  print(json.dumps(query))
   results = elastic.search(query)
   flights, flight_count = process_search(results)
   
