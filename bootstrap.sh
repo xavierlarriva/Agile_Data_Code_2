@@ -274,6 +274,9 @@ cd
 cd /home/vagrant/Agile_Data_Code_2
 ./download.sh
 
+# Install phantomjs
+/home/ubuntu/Agile_Data_Code/install/phantomjs.sh
+
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
 sudo chown vagrant /home/vagrant/.bash_profile
