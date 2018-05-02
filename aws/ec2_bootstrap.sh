@@ -312,15 +312,6 @@ echo "sudo chown -R ubuntu /home/ubuntu/airflow" | tee -a /home/ubuntu/.bash_pro
 echo "sudo chgrp -R ubuntu /home/ubuntu/airflow" | tee -a /home/ubuntu/.bash_profile
 
 # Jupyter server setup
-# echo "" | tee -a $LOG_FILE
-# echo "Starting Jupyter notebook server ..." | tee -a $LOG_FILE
-# jupyter-notebook --generate-config
-# cp /home/ubuntu/Agile_Data_Code_2/jupyter_notebook_config.py /home/ubuntu/.jupyter/
-# cd /home/ubuntu/Agile_Data_Code_2
-# jupyter-notebook --ip=0.0.0.0 &
-# cd
-
-# Jupyter server setup
 jupyter notebook --generate-config
 cp /home/ubuntu/Agile_Data_Code_2/jupyter_notebook_config.py /home/ubuntu/.jupyter/
 mkdir /home/ubuntu/certs
@@ -358,6 +349,9 @@ rm /tmp/janusgraph-0.2.0-hadoop2.zip
 # Download data
 cd /home/ubuntu/Agile_Data_Code_2
 ./download.sh
+
+# Install phantomjs
+/home/ubuntu/Agile_Data_Code/install/phantomjs.sh
 
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chgrp ubuntu ~/.bash_profile
