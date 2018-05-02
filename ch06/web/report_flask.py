@@ -180,8 +180,20 @@ def flights_per_airplane(tail_number):
   )
 
 # Controller: Fetch an airplane entity page
-@app.route("/airline/<carrier_code>")
+@app.route("/airlines/<carrier_code>")
 def airline(carrier_code):
+  airline_airplanes = client.agile_data_science.airplanes_per_carrier.find_one(
+    {'Carrier': carrier_code}
+  )
+  return render_template(
+    'airlines.html',
+    airline_airplanes=airline_airplanes,
+    carrier_code=carrier_code
+  )
+
+# Controller: Fetch an airplane entity page
+@app.route("/airlines2/<carrier_code>")
+def airline2(carrier_code):
   airline_summary = client.agile_data_science.airlines.find_one(
     {'CarrierCode': carrier_code}
   )
@@ -189,7 +201,7 @@ def airline(carrier_code):
     {'Carrier': carrier_code}
   )
   return render_template(
-    'airlines.html',
+    'airlines2.html',
     airline_summary=airline_summary,
     airline_airplanes=airline_airplanes,
     carrier_code=carrier_code
@@ -274,17 +286,6 @@ def search_flights():
     tail_number=tail_number,
     flight_number=flight_number
     )
-
-def shutdown_server():
-  func = request.environ.get('werkzeug.server.shutdown')
-  if func is None:
-    raise RuntimeError('Not running with the Werkzeug Server')
-  func()
-
-@app.route('/shutdown')
-def shutdown():
-  shutdown_server()
-  return 'Server shutting down...'
 
 if __name__ == "__main__":
   app.run(
