@@ -95,7 +95,11 @@ def search_flights():
   
   # Navigation path and offset setup
   nav_path = strip_place(request.url)
-  nav_offsets = get_navigation_offsets(start, end, config.RECORDS_PER_PAGE)
+  nav_offsets = get_navigation_offsets(
+    start, 
+    end, 
+    config.RECORDS_PER_PAGE
+  )
   
   # Build the base of our elasticsearch query
   query = {
