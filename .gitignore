@@ -27,3 +27,4 @@ models
 .deep_reservation_id
 deep/data
 .vscode
+ghostdriver.log
