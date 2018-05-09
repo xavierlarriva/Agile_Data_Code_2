@@ -142,26 +142,18 @@ def search_airplanes():
 
   # Navigation path and offset setup
   nav_path = search_helpers.strip_place(request.url)
-  nav_offsets = search_helpers.get_navigation_offsets(start, end, config.AIRPLANE_RECORDS_PER_PAGE)
-
-  print("nav_path: [{}]".format(nav_path))
-  print(json.dumps(nav_offsets))
-
+  nav_offsets = search_helpers.get_navigation_offsets(
+    start, 
+    end, 
+    config.AIRPLANE_RECORDS_PER_PAGE
+  )
+  
   # Build the base of our elasticsearch query
   query = {
     'query': {
       'bool': {
         'must': []}
     },
-    'sort': [
-      {'Owner': {'order': 'asc'} },
-      # {'Manufacturer': {'order': 'asc', 'ignore_unmapped' : True} },
-      # {'Model': {'order': 'asc', 'ignore_unmapped': True} },
-      # {'EngineManufacturer': {'order': 'asc', 'ignore_unmapped' : True} },
-      # {'EngineModel': {'order': 'asc', 'ignore_unmapped': True} },
-      # {'TailNum': {'order': 'asc', 'ignore_unmapped' : True} },
-      '_score'
-    ],
     'from': start,
     'size': config.AIRPLANE_RECORDS_PER_PAGE
   }
@@ -170,13 +162,12 @@ def search_airplanes():
   for item in search_config:
     field = item['field']
     value = request.args.get(field)
-    print(field, value)
     arg_dict[field] = value
     if value:
       query['query']['bool']['must'].append({'match': {field: value}})
 
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query)
+  results = elastic.search(query, index='agile_data_science_airplanes')
   airplanes, airplane_count = search_helpers.process_search(results)
 
   # Persist search parameters in the form template
@@ -296,7 +287,7 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
   
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query)
+  results = elastic.search(query, index='agile_data_science')
   flights, flight_count = process_search(results)
   
   # Persist search parameters in the form template
