@@ -45,7 +45,7 @@ def compare_manufacturers(mfrs):
   return record
 
 # Pair every unique instance of Manufacturer field with every other for comparison
-comparison_pairs = manufacturer_variety.join(manufacturer_variety)
+comparison_pairs = manufacturer_variety.crossJoin(manufacturer_variety)
 
 # Do the comparisons
 comparisons = comparison_pairs.rdd.map(compare_manufacturers)
