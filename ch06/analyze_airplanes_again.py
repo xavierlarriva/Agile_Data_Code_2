@@ -26,7 +26,7 @@ total_airplanes = spark.sql(
 )
 print("Total airplanes: {}".format(total_airplanes.collect()[0].OverallTotal))
 
-mfr_with_totals = manufacturer_counts.join(total_airplanes)
+mfr_with_totals = manufacturer_counts.crossJoin(total_airplanes)
 mfr_with_totals = mfr_with_totals.rdd.map(
   lambda x: {
     'Manufacturer': x.Manufacturer,
@@ -66,8 +66,8 @@ relative_manufacturer_counts.show(30) # show top 30
 #
 # Now get these things on the web
 #
-relative_manufacturer_counts = relative_manufacturer_counts.rdd.map(lambda row: row.asDict())
-grouped_manufacturer_counts = relative_manufacturer_counts.groupBy(lambda x: 1)
+relative_manufacturer_counts_dict = relative_manufacturer_counts.rdd.map(lambda row: row.asDict())
+grouped_manufacturer_counts = relative_manufacturer_counts_dict.groupBy(lambda x: 1)
 
 # Save to Mongo in the airplanes_per_carrier relation
 import pymongo_spark
