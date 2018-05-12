@@ -56,3 +56,14 @@ spark.sql("""
   GROUP BY HOUR(CRSArrTime)
   ORDER BY HOUR(CRSArrTime)
 """).show(24)
+
+from pyspark.sql.functions import hour
+
+features = features.withColumn('CRSDepHourOfDay', hour(features.CRSDepTime))
+features = features.withColumn('CRSArrHourOfDay', hour(features.CRSArrTime))
+
+departure_cov = features.stat.cov('CRSDepHourOfDay', 'ArrDelay')
+arrival_cov = features.stat.cov('CRSArrHourOfDay', 'ArrDelay')
+
+print("Departure delay covariance: {:,}".format(departure_cov))
+print("Arrival delay covariance:   {:,}".format(arrival_cov))
