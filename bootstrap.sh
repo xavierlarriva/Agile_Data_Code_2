@@ -80,7 +80,7 @@ sudo chgrp -R vagrant /home/vagrant/hadoop
 #
 echo "" | tee -a $LOG_FILE
 echo "Downloading and installing Spark 2.2.1 ..." | tee -a $LOG_FILE
-curl -Lko /tmp/spark-2.2.1-bin-without-hadoop.tgz http://apache.mirrors.lucidnetworks.net/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz
+curl -Lko /tmp/spark-2.2.1-bin-without-hadoop.tgz https://archive.apache.org/dist/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz
 mkdir -p /home/vagrant/spark
 cd /home/vagrant
 tar -xvf /tmp/spark-2.2.1-bin-without-hadoop.tgz -C spark --strip-components=1
