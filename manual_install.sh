@@ -79,13 +79,13 @@ pip install -r requirements.txt
 # our Hadoop environment for Spark to run
 #
 if [ ! -d hadoop ]; then
-  echo "Installing hadoop 2.7.3 into $PROJECT_HOME/hadoop ..."
+  echo "Installing hadoop 2.7.4 into $PROJECT_HOME/hadoop ..."
 
   # May need to update this link... see http://hadoop.apache.org/releases.html
-  curl -Lko /tmp/hadoop-2.7.3.tar.gz http://apache.osuosl.org/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+  curl -Lko /tmp/hadoop-2.7.4.tar.gz http://apache.osuosl.org/hadoop/common/hadoop-2.7.4/hadoop-2.7.4.tar.gz
 
   mkdir hadoop
-  tar -xvf /tmp/hadoop-2.7.3.tar.gz -C hadoop --strip-components=1
+  tar -xvf /tmp/hadoop-2.7.4.tar.gz -C hadoop --strip-components=1
   echo '# Hadoop environment setup' >> ~/.bash_profile
   export HADOOP_HOME=$PROJECT_HOME/hadoop
   echo 'export HADOOP_HOME=$PROJECT_HOME/hadoop' >> ~/.bash_profile
