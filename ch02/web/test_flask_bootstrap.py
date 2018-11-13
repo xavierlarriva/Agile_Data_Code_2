@@ -15,4 +15,4 @@ def executive(name):
   executives = db.executives.find({"name": name})
   return render_template('table.html', executives=list(executives))
 
-if __name__ == "__main__": app.run(debug=True)
+if __name__ == "__main__": app.run(debug=True, host='0.0.0.0')

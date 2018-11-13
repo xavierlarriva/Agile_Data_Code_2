@@ -17,6 +17,14 @@ sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
 sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
+cd /var/lib/dpkg/info
+sudo sed -i 's|JAVA_VERSION=8u151|JAVA_VERSION=8u162|' oracle-java8-installer.*
+sudo sed -i 's|PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/|PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/|' oracle-java8-installer.*
+sudo sed -i 's|SHA256SUM_TGZ="c78200ce409367b296ec39be4427f020e2c585470c4eed01021feada576f027f"|SHA256SUM_TGZ="68ec82d47fd9c2b8eb84225b6db398a72008285fafc98631b1ff8d2229680257"|' oracle-java8-installer.*
+sudo sed -i 's|J_DIR=jdk1.8.0_151|J_DIR=jdk1.8.0_162|' oracle-java8-installer.*
+echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
+
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /home/vagrant/.bash_profile
@@ -42,9 +50,11 @@ git clone https://github.com/rjurney/Agile_Data_Code_2
 cd /home/vagrant/Agile_Data_Code_2
 export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2
 echo "export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2" | sudo tee -a /home/vagrant/.bash_profile
+
 conda install -y python=3.5
 conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
 pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark
+
 sudo chown -R vagrant /home/vagrant/Agile_Data_Code_2
 sudo chgrp -R vagrant /home/vagrant/Agile_Data_Code_2
 cd /home/vagrant
@@ -100,8 +110,8 @@ echo 'export PATH=$PATH:$SPARK_HOME/bin' | sudo tee -a /home/vagrant/.bash_profi
 cp /home/vagrant/spark/conf/spark-defaults.conf.template /home/vagrant/spark/conf/spark-defaults.conf
 echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | sudo tee -a /home/vagrant/spark/conf/spark-defaults.conf
 
-# Give Spark 25GB of RAM, use Python3
-echo "spark.driver.memory 6g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+# Give Spark 8GB of RAM, use Python3
+echo "spark.driver.memory 8g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "spark.executor.cores 2" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "PYSPARK_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 echo "PYSPARK_DRIVER_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
@@ -126,7 +136,8 @@ sudo chgrp -R mongodb /data/db
 sudo systemctl start mongodb
 
 # Get the MongoDB Java Driver
-curl -Lko /home/vagrant/Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.2/mongo-java-driver-3.4.2.jar
+echo "curl -sLko /home/vagrant/Agile_Data_Code_2/lib/mongo-java-driver-3.6.1.jar https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.6.1/mongo-java-driver-3.6.1.jar"
+curl -sLko /home/vagrant/Agile_Data_Code_2/lib/mongo-java-driver-3.6.1.jar https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/3.6.1/mongo-java-driver-3.6.1.jar
 
 # Install the mongo-hadoop project in the mongo-hadoop directory in the root of our project.
 curl -Lko /tmp/mongo-hadoop-r2.0.2.tar.gz https://github.com/mongodb/mongo-hadoop/archive/r2.0.2.tar.gz
@@ -156,11 +167,11 @@ rm -rf /home/vagrant/mongo-hadoop
 #
 # Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
 #
-echo "curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz"
-curl -sLko /tmp/elasticsearch-5.2.1.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.tar.gz
+echo "curl -sLko /tmp/elasticsearch-6.1.2.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.2.tar.gz"
+curl -sLko /tmp/elasticsearch-6.1.2.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.2.tar.gz
 mkdir /home/vagrant/elasticsearch
 cd /home/vagrant
-tar -xvzf /tmp/elasticsearch-5.2.1.tar.gz -C elasticsearch --strip-components=1
+tar -xvzf /tmp/elasticsearch-6.1.2.tar.gz -C elasticsearch --strip-components=1
 sudo chown -R vagrant /home/vagrant/elasticsearch
 sudo chgrp -R vagrant /home/vagrant/elasticsearch
 sudo mkdir -p /home/vagrant/elasticsearch/logs
@@ -175,14 +186,14 @@ echo "Testing Elasticsearch with a query ..." | tee -a $LOG_FILE
 curl 'localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty'
 
 # Install Elasticsearch for Hadoop
-echo "curl -sLko /tmp/elasticsearch-hadoop-5.2.1.zip http://download.elastic.co/hadoop/elasticsearch-hadoop-5.2.1.zip"
-curl -sLko /tmp/elasticsearch-hadoop-5.2.1.zip http://download.elastic.co/hadoop/elasticsearch-hadoop-5.2.1.zip
-unzip /tmp/elasticsearch-hadoop-5.2.1.zip
-mv /home/vagrant/elasticsearch-hadoop-5.2.1 /home/vagrant/elasticsearch-hadoop
-cp /home/vagrant/elasticsearch-hadoop/dist/elasticsearch-hadoop-5.2.1.jar /home/vagrant/Agile_Data_Code_2/lib/
-cp /home/vagrant/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-5.2.1.jar /home/vagrant/Agile_Data_Code_2/lib/
+echo "curl -sLko /tmp/elasticsearch-hadoop-6.1.2.zip http://download.elastic.co/hadoop/elasticsearch-hadoop-6.1.2.zip"
+curl -sLko /tmp/elasticsearch-hadoop-6.1.2.zip http://download.elastic.co/hadoop/elasticsearch-hadoop-6.1.2.zip
+unzip /tmp/elasticsearch-hadoop-6.1.2.zip
+mv /home/vagrant/elasticsearch-hadoop-6.1.2 /home/vagrant/elasticsearch-hadoop
+cp /home/vagrant/elasticsearch-hadoop/dist/elasticsearch-hadoop-6.1.2.jar /home/vagrant/Agile_Data_Code_2/lib/
+cp /home/vagrant/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.11-6.1.2.jar /home/vagrant/Agile_Data_Code_2/lib/
 echo "spark.speculation false" | sudo tee -a /home/vagrant/spark/conf/spark-defaults.conf
-rm -f /tmp/elasticsearch-hadoop-5.2.1.zip
+rm -f /tmp/elasticsearch-hadoop-6.1.2.zip
 rm -rf /home/vagrant/elasticsearch-hadoop/conf/spark-defaults.conf
 
 #
@@ -193,8 +204,8 @@ rm -rf /home/vagrant/elasticsearch-hadoop/conf/spark-defaults.conf
 echo "" | tee -a $LOG_FILE
 echo "Installing snappy-java and lzo-java and adding them to our classpath ..." | tee -a $LOG_FILE
 cd /home/vagrant/Agile_Data_Code_2
-curl -Lko lib/snappy-java-1.1.7.1.jar http://central.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar
-curl -Lko lib/lzo-hadoop-1.0.5.jar http://central.maven.org/maven2/org/anarres/lzo/lzo-hadoop/1.0.5/lzo-hadoop-1.0.5.jar
+curl -sLko lib/snappy-java-1.1.7.1.jar http://central.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar
+curl -sLko lib/lzo-hadoop-1.0.5.jar http://central.maven.org/maven2/org/anarres/lzo/lzo-hadoop/1.0.5/lzo-hadoop-1.0.5.jar
 cd /home/vagrant
 
 # Set the spark.jars path
