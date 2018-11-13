@@ -260,9 +260,10 @@ echo "export SPARK_CLASSPATH=" >> zeppelin/conf/zeppelin-env.sh
 
 # Jupyter server setup
 jupyter notebook --generate-config
-cp /home/vagrant/Agile_Data_Code_2/jupyter_notebook_config.py /home/vagrant/.jupyter/
-mkdir /home/vagrant/certs
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /home/vagrant/certs/mycert.pem -out /home/vagrant/certs/mycert.pem
+mkdir /root/.jupyter/
+cp /home/vagrant/Agile_Data_Code_2/jupyter_notebook_config.py /root/.jupyter/
+mkdir /root/certs
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /root/certs/mycert.pem -out /root/certs/mycert.pem
 
 jupyter notebook --ip=0.0.0.0 --allow-root --no-browser &
 =======
