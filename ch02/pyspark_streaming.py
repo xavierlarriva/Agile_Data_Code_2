@@ -5,13 +5,17 @@ from pyspark import SparkContext, SparkConf
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils, OffsetRange, TopicAndPartition
 
+
 # Process data every 10 seconds
-PERIOD=10
-BROKERS='localhost:9092'
-TOPIC='test'
+PERIOD = 10
+BROKERS = 'localhost:9092'
+TOPIC = 'test'
 
 conf = SparkConf().set("spark.default.parallelism", 1)
-#sc = SparkContext(appName = "Agile Data Science: PySpark Streaming 'Hello, World!'", conf = conf)
+
+# Stop the default SparkContext before creating a new one.
+sc.stop()
+sc = SparkContext(appName="Agile Data Science: PySpark Streaming 'Hello, World!'", conf = conf)
 ssc = StreamingContext(sc, PERIOD)
 
 stream = KafkaUtils.createDirectStream(
