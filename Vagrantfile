@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://app.vagrantup.com/boxes/search
   config.vm.box = "ubuntu/bionic64"
+  config.disksize.size = '20GB'
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -49,9 +50,10 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision :shell, :path => "bootstrap.sh"
 
-  # Map hosts ports 5000,4567,8080, 8888 to local port 5000,4567,8080, 8888
+  # Map hosts ports 5000,4567,8080,8888,9200 to local port 5000,4567,8080,8888,9200
   config.vm.network :forwarded_port, guest: 5000, host: 5000
   config.vm.network :forwarded_port, guest: 4567, host: 4567
   config.vm.network :forwarded_port, guest: 8080, host: 8080
   config.vm.network :forwarded_port, guest: 8888, host: 8888
+  config.vm.network :forwarded_port, guest: 9200, host: 9200
 end
