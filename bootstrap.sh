@@ -216,8 +216,8 @@ echo "spark.jars /home/vagrant/Agile_Data_Code_2/lib/mongo-hadoop-spark-2.0.2.ja
 #
 echo "" | tee -a $LOG_FILE
 echo "Downloading and installing Kafka version 1.0.0 for Spark 2.11 ..." | tee -a $LOG_FILE
-echo "curl -sLko /tmp/kafka_2.11-1.0.0.tgz http://www-us.apache.org/dist/kafka/0.10.1.1/kafka_2.11-1.0.0.tgz"
-curl -sLko /tmp/kafka_2.11-1.0.0.tgz http://www-us.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+echo "curl -sLko /tmp/kafka_2.11-1.0.0.tgz https://archive.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz"
+curl -sLko /tmp/kafka_2.11-1.0.0.tgz https://archive.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz
 mkdir -p /home/vagrant/kafka
 cd /home/vagrant/
 tar -xvzf /tmp/kafka_2.11-1.0.0.tgz -C kafka --strip-components=1 && rm -f /tmp/kafka_2.11-1.0.0.tgz
@@ -244,7 +244,9 @@ sudo -H -u vagrant /home/vagrant/kafka/bin/kafka-server-start.sh -daemon /home/v
 #
 # Install and setup Airflow
 #
-pip install airflow[hive]
+echo "export SLUGIFY_USES_TEXT_UNIDECODE=yes"
+export SLUGIFY_USES_TEXT_UNIDECODE=yes
+pip install apache-airflow[hive]
 mkdir /home/vagrant/airflow
 mkdir /home/vagrant/airflow/dags
 mkdir /home/vagrant/airflow/logs
@@ -258,8 +260,8 @@ airflow webserver -D &
 airflow scheduler -D &
 
 # Install Apache Zeppelin
-echo "curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz"
-curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz http://www-us.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
+echo "curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz"
+curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
 mkdir zeppelin
 tar -xvzf /tmp/zeppelin-0.7.3-bin-all.tgz -C zeppelin --strip-components=1
 
@@ -277,7 +279,7 @@ mkdir /root/certs
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /root/certs/mycert.pem -out /root/certs/mycert.pem
 
 jupyter notebook --ip=0.0.0.0 --allow-root --no-browser &
-=======
+# =======
 sudo chown -R vagrant /home/vagrant/airflow
 sudo chgrp -R vagrant /home/vagrant/airflow
 
