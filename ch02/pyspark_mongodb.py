@@ -22,17 +22,17 @@
 #
 # Agile_Data_Code_2/lib/mongo-hadoop-2.0.2.jar	    
 # Agile_Data_Code_2/lib/mongo-hadoop-spark-2.0.2.jar
-# Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar
+# Agile_Data_Code_2/lib/mongo-java-driver-3.6.1.jar
 #
 # then the mongo-hadoop version would be 2.0.2, and the 
-# Mongo-Java version would be 3.4.2.  
+# Mongo-Java version would be 3.6.1.
 #
 # Choosing to set these versions as environment variables
 # will make the invocation of the command much less error
 # prone.
 #
 # MONGOHADOOP_VERSION=2.0.2
-# MONGOJAVA_VERSION=3.4.2
+# MONGOJAVA_VERSION=3.6.1
 #
 # The names of the JAR files can then be pieced together
 # from the version strings.
@@ -48,7 +48,6 @@
 #   --jars $MONGOHADOOPSPARK_JAR,$MONGOJAVADRIVER_JAR,$MONGOHADOOP_JAR \
 #   --driver-class-path $MONGOHADOOPSPARK_JAR:$MONGOJAVADRIVER_JAR:$MONGOHADOOP_JAR
 
-import pymongo
 import pymongo_spark
 # Important: activate pymongo_spark.
 pymongo_spark.activate()
