@@ -6,6 +6,12 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
+
+  # The default disk size of the ubuntu-bionic64 box is 10 GB, which
+  # is not enough space to handle all current software and data files.
+  # We use the vagrant-disksize plugin to specify a 20 GB disk.
+  config.vagrant.plugins = 'vagrant-disksize'
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
