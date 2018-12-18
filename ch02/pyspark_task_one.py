@@ -50,8 +50,8 @@ def main(iso_date, base_path):
     record = {"name": name, "master_title": master_title}
     return record
   
-  people_with_contactenated_titles = titles_by_name.map(concatenate_titles)
-  people_output_json = people_with_contactenated_titles.map(json.dumps)
+  people_with_concatenated_titles = titles_by_name.map(concatenate_titles)
+  people_output_json = people_with_concatenated_titles.map(json.dumps)
   
   # Get today's output path
   today_output_path = "{}/ch02/data/example_master_titles_daily.json/{}".format(
