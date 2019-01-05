@@ -8,7 +8,7 @@ sudo chgrp -R vagrant /home/vagrant
 #
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
-    software-properties-common debconf-utils python-software-properties
+    software-properties-common debconf-utils
 
 #
 # Install Java and setup ENV
