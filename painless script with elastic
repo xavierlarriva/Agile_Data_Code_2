@@ -1,0 +1,25 @@
+curl -X POST   'http://localhost:9200/tweets/tweet/_search' -H 'Content-Type: application/json'   -d '{  
+  "query":{  
+     "bool":{  
+        "must":[  
+           {  
+              "match":{  
+                 "message":"painless"
+              }
+           }
+        ],
+        "filter":[  
+           {  
+              "script":{  
+                 "script":{  
+                    "inline":"doc['\''message.keyword'\''].value.length() > params.length",
+                    "params":{  
+                       "length":25
+                    }
+                 }
+              }
+           }
+        ]
+     }
+  }
+}'
