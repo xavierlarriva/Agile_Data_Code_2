@@ -54,16 +54,26 @@ sudo chmod 0755 /etc/update-motd.d/99-agile-data-science
 sudo update-motd
 
 #
-# Install Java and setup ENV
+# Uncomment below to install Oracle Java8 (No longer available from ppa)
 #
-echo "Installing and configuring Java 8 from Oracle ..." | tee -a $LOG_FILE
-sudo add-apt-repository -y ppa:webupd8team/java
-sudo apt-get update
-echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
-sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
+# echo "Installing and configuring Java 8 from Oracle ..." | tee -a $LOG_FILE
+# sudo add-apt-repository -y ppa:webupd8team/java
+# sudo apt-get update
+# echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+# sudo apt-get install -y oracle-java8-installer oracle-java8-set-default
+#
+# export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+# echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /home/ubuntu/.bash_profile
 
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /home/ubuntu/.bash_profile
+#
+# Intall OpenJDK 8 - Oracle Java no longer available
+#
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install openjdk-8-jdk
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" | sudo tee -a /home/vagrant/.bash_profile
 
 #
 # Install Miniconda
