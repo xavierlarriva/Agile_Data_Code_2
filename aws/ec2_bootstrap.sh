@@ -70,7 +70,7 @@ sudo update-motd
 #
 sudo add-apt-repository ppa:openjdk-r/ppa
 sudo apt-get update
-sudo apt-get install openjdk-8-jdk
+sudo apt-get install -y openjdk-8-jdk
 
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" | sudo tee -a /home/vagrant/.bash_profile
