@@ -31,9 +31,10 @@ if [ -z `which jq` ]; then
   exit
 fi
 
-if [ -z `which aws`]; then
+if [ -z `which aws` ]; then
     echo "You need to install the aws CLI tool. Go here for installation instructions https://aws.amazon.com/cli/" | tee -a $LOG_FILE
-    exit 1
+    exit
+fi
 
 echo "Testing for security group 'agile_data_science' ..." | tee -a $LOG_FILE
 GROUP_NAME_FILTER=`aws ec2 describe-security-groups | jq '.SecurityGroups[] | select(.GroupName == "agile_data_science") | length'`
