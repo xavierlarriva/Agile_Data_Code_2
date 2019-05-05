@@ -40,7 +40,7 @@ Now you must authenticate into the AWS CLI via:
 aws configure
 ```
 
-Once you've provided it your AWS credentials, run the following command to bring up a machine pre-configured with the book's complete environment and source code:
+Once you've provided it your AWS credentials consisting of your access key ID/secret access key (available from AWS Dashboard at: user name dropdown (Ex. Russell Jurney)-> [My Security Credentials](https://console.aws.amazon.com/iam/home#/security_credentials)->Access keys), a default [AWS region](https://docs.aws.amazon.com/general/latest/gr/rande.html) (for example, 'us-west-2' or 'us-east-1') and the 'json' output format, run the following command to bring up a machine pre-configured with the book's complete environment and source code:
 
 ```
 ./ec2.sh
