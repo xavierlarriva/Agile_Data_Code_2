@@ -128,7 +128,7 @@ aws ec2 run-instances \
     --image-id $UBUNTU_IMAGE_ID \
     --security-groups agile_data_science \
     --key-name agile_data_science \
-    --instance-type r4.xlarge \
+    --instance-type r5.2xlarge \
     --user-data file://aws/ec2_bootstrap.sh \
     --ebs-optimized \
     --block-device-mappings '{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":true,"VolumeSize":256}}' \
