@@ -1,5 +1,5 @@
 Flask
-airflow
+apache-airflow
 beautifulsoup4 
 bs4
 frozendict

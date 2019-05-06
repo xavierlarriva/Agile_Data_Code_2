@@ -1,3 +1,4 @@
+import sys, os, re
 from flask import Flask, render_template, request
 from pymongo import MongoClient
 from bson import json_util
@@ -17,6 +18,36 @@ from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
 
 import json
+
+
+# Process elasticsearch hits and return flights records
+def process_search(results):
+  records = []
+  if results['hits'] and results['hits']['hits']:
+    total = results['hits']['total']
+    hits = results['hits']['hits']
+    for hit in hits:
+      record = hit['_source']
+      records.append(record)
+  return records, total
+
+# Calculate offsets for fetching lists of flights from MongoDB
+def get_navigation_offsets(offset1, offset2, increment):
+  offsets = {}
+  offsets['Next'] = {'top_offset': offset2 + increment, 'bottom_offset': 
+  offset1 + increment}
+  offsets['Previous'] = {'top_offset': max(offset2 - increment, 0), 
+ 'bottom_offset': max(offset1 - increment, 0)} # Don't go < 0
+  return offsets
+
+# Strip the existing start and end parameters from the query string
+def strip_place(url):
+  try:
+    p = re.match('(.+)&start=.+&end=.+', url).group(1)
+  except AttributeError as e:
+    return url
+  return p
+
 
 # Chapter 5 controller: Fetch a flight and display it
 @app.route("/on_time_performance")
@@ -112,10 +143,11 @@ def search_airplanes():
 
   # Navigation path and offset setup
   nav_path = search_helpers.strip_place(request.url)
-  nav_offsets = search_helpers.get_navigation_offsets(start, end, config.AIRPLANE_RECORDS_PER_PAGE)
-
-  print("nav_path: [{}]".format(nav_path))
-  print(json.dumps(nav_offsets))
+  nav_offsets = search_helpers.get_navigation_offsets(
+    start, 
+    end, 
+    config.AIRPLANE_RECORDS_PER_PAGE
+  )
 
   # Build the base of our elasticsearch query
   query = {
@@ -123,15 +155,6 @@ def search_airplanes():
       'bool': {
         'must': []}
     },
-    'sort': [
-      {'Owner': {'order': 'asc'} },
-      # {'Manufacturer': {'order': 'asc', 'ignore_unmapped' : True} },
-      # {'Model': {'order': 'asc', 'ignore_unmapped': True} },
-      # {'EngineManufacturer': {'order': 'asc', 'ignore_unmapped' : True} },
-      # {'EngineModel': {'order': 'asc', 'ignore_unmapped': True} },
-      # {'TailNum': {'order': 'asc', 'ignore_unmapped' : True} },
-      '_score'
-    ],
     'from': start,
     'size': config.AIRPLANE_RECORDS_PER_PAGE
   }
@@ -140,13 +163,12 @@ def search_airplanes():
   for item in search_config:
     field = item['field']
     value = request.args.get(field)
-    print(field, value)
     arg_dict[field] = value
     if value:
       query['query']['bool']['must'].append({'match': {field: value}})
 
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query)
+  results = elastic.search(query, index='agile_data_science_airplanes')
   airplanes, airplane_count = search_helpers.process_search(results)
 
   # Persist search parameters in the form template
@@ -180,8 +202,20 @@ def flights_per_airplane(tail_number):
   )
 
 # Controller: Fetch an airplane entity page
-@app.route("/airline/<carrier_code>")
+@app.route("/airlines/<carrier_code>")
 def airline(carrier_code):
+  airline_airplanes = client.agile_data_science.airplanes_per_carrier.find_one(
+    {'Carrier': carrier_code}
+  )
+  return render_template(
+    'airlines.html',
+    airline_airplanes=airline_airplanes,
+    carrier_code=carrier_code
+  )
+
+# Controller: Fetch an airplane entity page
+@app.route("/airlines2/<carrier_code>")
+def airline2(carrier_code):
   airline_summary = client.agile_data_science.airlines.find_one(
     {'CarrierCode': carrier_code}
   )
@@ -189,7 +223,7 @@ def airline(carrier_code):
     {'Carrier': carrier_code}
   )
   return render_template(
-    'airlines.html',
+    'airlines2.html',
     airline_summary=airline_summary,
     airline_airplanes=airline_airplanes,
     carrier_code=carrier_code
@@ -232,10 +266,7 @@ def search_flights():
         'must': []}
     },
     'sort': [
-      {'FlightDate': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'DepTime': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'Carrier': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'FlightNum': {'order': 'asc', 'ignore_unmapped' : True} },
+      {'FlightDate': 'asc' },
       '_score'
     ],
     'from': start,
@@ -257,8 +288,8 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
 
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query)
-  flights, flight_count = search_helpers.process_search(results)
+  results = elastic.search(query, index='agile_data_science')
+  flights, flight_count = process_search(results)
 
   # Persist search parameters in the form template
   return render_template(
@@ -276,4 +307,7 @@ def search_flights():
     )
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(
+    debug=True,
+    host='0.0.0.0'
+  )

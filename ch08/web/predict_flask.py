@@ -294,8 +294,8 @@ def delays():
 # Load our regression model
 from sklearn.externals import joblib
 project_home = os.environ["PROJECT_HOME"]
-vectorizer = joblib.load("{}/models/sklearn_vectorizer.pkl".format(project_home))
-regressor = joblib.load("{}/models/sklearn_regressor.pkl".format(project_home))
+# vectorizer = joblib.load("{}/models/sklearn_vectorizer.pkl".format(project_home))
+# regressor = joblib.load("{}/models/sklearn_regressor.pkl".format(project_home))
 
 # Make our API a post, so a search engine wouldn't hit it
 @app.route("/flights/delays/predict/regress", methods=['POST'])
@@ -512,7 +512,7 @@ def classify_flight_delays_realtime_response(unique_id):
   
   prediction = client.agile_data_science.flight_delay_classification_response.find_one(
     {
-      "UUID": unique_id
+      "id": unique_id
     }
   )
   
@@ -523,5 +523,19 @@ def classify_flight_delays_realtime_response(unique_id):
   
   return json_util.dumps(response)
 
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
+@app.route('/shutdown')
+def shutdown():
+  shutdown_server()
+  return 'Server shutting down...'
+
 if __name__ == "__main__":
-  app.run(debug=True)
+    app.run(
+    debug=True,
+    host='0.0.0.0'
+  )

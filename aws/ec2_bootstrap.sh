@@ -7,7 +7,7 @@ echo "Logging to \"$LOG_FILE\" ..."
 echo "Installing essential packages via apt-get in non-interactive mode ..." | tee -a $LOG_FILE
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
-    software-properties-common debconf-utils python-software-properties
+    software-properties-common debconf-utils python-software-properties apt-transport-https
 
 # Update the motd message to create instructions for users when they ssh in
 echo "Updating motd boot message with instructions for the user of the image ..." | tee -a $LOG_FILE
@@ -73,7 +73,7 @@ sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
 
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" | sudo tee -a /home/vagrant/.bash_profile
+echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" | sudo tee -a /home/ubuntu/.bash_profile
 
 #
 # Install Miniconda
@@ -100,7 +100,10 @@ cd /home/ubuntu/Agile_Data_Code_2
 export PROJECT_HOME=/home/ubuntu/Agile_Data_Code_2
 echo "export PROJECT_HOME=/home/ubuntu/Agile_Data_Code_2" | sudo tee -a /home/ubuntu/.bash_profile
 conda install -y python=3.5
+conda update -y -n base conda
+conda install -y tornado=4.5.3 # To deal with https://github.com/jupyter/notebook/issues/3544
 conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
+pip install --upgrade pip
 pip install -r requirements.txt
 sudo chown -R ubuntu /home/ubuntu/Agile_Data_Code_2
 sudo chgrp -R ubuntu /home/ubuntu/Agile_Data_Code_2
@@ -244,7 +247,7 @@ sudo -u ubuntu /home/ubuntu/elasticsearch/bin/elasticsearch -d # re-run if you s
 
 # Run a query to test - it will error but should return json
 echo "Testing Elasticsearch with a query ..." | tee -a $LOG_FILE
-curl 'localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty'
+curl 'http://localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty' | tee -a $LOG_FILE
 
 # Install Elasticsearch for Hadoop
 echo "" | tee -a $LOG_FILE
@@ -333,8 +336,12 @@ echo "" | tee -a $LOG_FILE
 echo "Starting Jupyter notebook server ..." | tee -a $LOG_FILE
 jupyter-notebook --generate-config
 cp /home/ubuntu/Agile_Data_Code_2/jupyter_notebook_config.py /home/ubuntu/.jupyter/
+
+mkdir /home/ubuntu/certs
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /home/ubuntu/certs/mycert.pem -out /home/ubuntu/certs/mycert.pem
+
 cd /home/ubuntu/Agile_Data_Code_2
-jupyter-notebook --ip=0.0.0.0 &
+jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 cd
 
 # Install Ant to build Cassandra
@@ -361,6 +368,16 @@ curl -Lko /tmp/janusgraph-0.2.0-hadoop2.zip \
 unzip -d . /tmp/janusgraph-0.2.0-hadoop2.zip
 mv janusgraph-0.2.0-hadoop2 janusgraph
 rm /tmp/janusgraph-0.2.0-hadoop2.zip
+
+# Download data
+cd /home/ubuntu/Agile_Data_Code_2
+./download.sh
+
+# Install phantomjs
+/home/ubuntu/Agile_Data_Code/install/phantomjs.sh
+
+# Install jq
+bash ./jq_install.sh
 
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chgrp ubuntu ~/.bash_profile

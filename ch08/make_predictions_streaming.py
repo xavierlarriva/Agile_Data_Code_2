@@ -4,15 +4,8 @@ import sys, os, re
 import json
 import datetime, iso8601
 
-from pyspark import SparkContext, SparkConf
-from pyspark.sql import SparkSession, Row
-from pyspark.streaming import StreamingContext
-from pyspark.streaming.kafka import KafkaUtils
-
 # Save to Mongo
 from bson import json_util
-import pymongo_spark
-pymongo_spark.activate()
 
 def main(base_path):
 
@@ -35,6 +28,14 @@ def main(base_path):
     import pyspark
     import pyspark.sql
     import pyspark.streaming
+
+    from pyspark import SparkContext, SparkConf
+    from pyspark.sql import SparkSession, Row
+    from pyspark.streaming import StreamingContext
+    from pyspark.streaming.kafka import KafkaUtils
+
+    import pymongo_spark
+    pymongo_spark.activate()
   
     conf = SparkConf().set("spark.default.parallelism", 1)
     sc = SparkContext(appName="Agile Data Science: PySpark Streaming 'Hello, World!'", conf=conf)

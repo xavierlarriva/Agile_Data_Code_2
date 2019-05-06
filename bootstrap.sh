@@ -8,7 +8,7 @@ sudo chgrp -R vagrant /home/vagrant
 #
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
-    software-properties-common debconf-utils
+    software-properties-common debconf-utils python-software-properties apt-transport-https
 
 #
 # Uncomment below to install Oracle Java8 (No longer available from ppa)
@@ -57,7 +57,7 @@ echo "export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2" | sudo tee -a /home/v
 
 conda install -y python=3.5
 conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
-pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark
+pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark imongo-kernel
 
 sudo chown -R vagrant /home/vagrant/Agile_Data_Code_2
 sudo chgrp -R vagrant /home/vagrant/Agile_Data_Code_2
@@ -282,7 +282,10 @@ cp /home/vagrant/Agile_Data_Code_2/jupyter_notebook_config.py /root/.jupyter/
 mkdir /root/certs
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /root/certs/mycert.pem -out /root/certs/mycert.pem
 
-jupyter notebook --ip=0.0.0.0 --allow-root --no-browser &
+cd /home/vagrant/Agile_Data_Code_2
+jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
+cd
+
 # =======
 sudo chown -R vagrant /home/vagrant/airflow
 sudo chgrp -R vagrant /home/vagrant/airflow
@@ -310,6 +313,13 @@ curl -Lko /tmp/janusgraph-0.2.0-hadoop2.zip \
 unzip -d . /tmp/janusgraph-0.2.0-hadoop2.zip
 mv janusgraph-0.2.0-hadoop2 janusgraph
 rm /tmp/janusgraph-0.2.0-hadoop2.zip
+
+# Download data
+cd /home/vagrant/Agile_Data_Code_2
+./download.sh
+
+# Install phantomjs
+/home/vagrant/Agile_Data_Code/install/phantomjs.sh
 
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
