@@ -16,7 +16,7 @@ GROUP BY
 ORDER BY
   Total DESC"""
 )
-manufacturer_counts.show(30) # show top 30
+manufacturer_counts.show(10) # show top 10
 
 # How many airplanes total?
 total_airplanes = spark.sql(
@@ -26,7 +26,7 @@ total_airplanes = spark.sql(
 )
 print("Total airplanes: {}".format(total_airplanes.collect()[0].OverallTotal))
 
-mfr_with_totals = manufacturer_counts.join(total_airplanes)
+mfr_with_totals = manufacturer_counts.crossJoin(total_airplanes)
 mfr_with_totals = mfr_with_totals.rdd.map(
   lambda x: {
     'Manufacturer': x.Manufacturer,

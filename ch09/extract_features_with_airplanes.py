@@ -55,11 +55,8 @@ def main(base_path):
   ).show(10)
   
   # Filter nulls, they can't help us
-  filled_on_time_features = simple_on_time_features.filter(
-    (simple_on_time_features.ArrDelay != None)
-    &
-    (simple_on_time_features.DepDelay != None)
-  )
+  filled_on_time_features = simple_on_time_features.where(simple_on_time_features.DepDelay.isNotNull())
+  filled_on_time_features = filled_on_time_features.where(filled_on_time_features.ArrDelay.isNotNull())
   
   # We need to turn timestamps into timestamps, and not strings or numbers
   def convert_hours(hours_minutes):

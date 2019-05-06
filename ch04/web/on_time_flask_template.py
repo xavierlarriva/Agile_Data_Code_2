@@ -89,7 +89,7 @@ def list_flights(origin, dest, flight_date):
     flight_count=flight_count,
     nav_path=request.path,
     nav_offsets=nav_offsets
-    )
+  )
 
 @app.route("/flights/search")
 @app.route("/flights/search/")
@@ -121,10 +121,7 @@ def search_flights():
         'must': []}
     },
     'sort': [
-      {'FlightDate': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'DepTime': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'Carrier': {'order': 'asc', 'ignore_unmapped' : True} },
-      {'FlightNum': {'order': 'asc', 'ignore_unmapped' : True} },
+      {'FlightDate': 'asx'},
       '_score'
     ],
     'from': start,
@@ -146,9 +143,6 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
   
   # Query elasticsearch, process to get records and count
-  print("QUERY")
-  print(carrier, flight_date, origin, dest, tail_number, flight_number)
-  print(json.dumps(query))
   results = elastic.search(query)
   flights, flight_count = process_search(results)
   
@@ -168,5 +162,7 @@ def search_flights():
     )
 
 if __name__ == "__main__":
-  app.run(debug=True)
-
+  app.run(
+    debug=True,
+    host='0.0.0.0'
+  )

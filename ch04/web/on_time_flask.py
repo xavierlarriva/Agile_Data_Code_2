@@ -17,10 +17,24 @@ def on_time_performance():
   flight = client.agile_data_science.on_time_performance.find_one({
     'Carrier': carrier,
     'FlightDate': flight_date,
-    'FlightNum': int(flight_num)
+    'FlightNum': flight_num
   })
   
   return json_util.dumps(flight)
 
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
+@app.route('/shutdown')
+def shutdown():
+  shutdown_server()
+  return 'Server shutting down...'
+
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(
+    debug=True,
+    host='0.0.0.0'
+  )
