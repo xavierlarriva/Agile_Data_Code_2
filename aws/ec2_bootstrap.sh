@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Update and install critical packages
-LOG_FILE="/tmp/ec2_bootstrap.sh.log"
+LOG_FILE="/home/ubuntu/ec2_bootstrap.sh.log"
 echo "Logging to \"$LOG_FILE\" ..."
 
 echo "Installing essential packages via apt-get in non-interactive mode ..." | tee -a $LOG_FILE
 sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
-    software-properties-common debconf-utils python-software-properties apt-transport-https
+    software-properties-common debconf-utils apt-transport-https
 
 # Update the motd message to create instructions for users when they ssh in
 echo "Updating motd boot message with instructions for the user of the image ..." | tee -a $LOG_FILE
@@ -67,8 +67,7 @@ curl -Lko /tmp/Miniconda3-latest-Linux-x86_64.sh https://repo.continuum.io/minic
 chmod +x /tmp/Miniconda3-latest-Linux-x86_64.sh
 /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /home/ubuntu/anaconda
 
-export PATH=/home/ubuntu/anaconda/bin:$PATH
-echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | sudo tee -a /home/ubuntu/.bash_profile
+export PATH=/home/ubuntu/anaconda/bin:$PATH # setup .bash_profile at end
 
 sudo chown -R ubuntu:ubuntu /home/ubuntu/anaconda
 
@@ -118,13 +117,13 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/hadoop
 
 # Install Spark
 echo "" | tee -a $LOG_FILE
-echo "Downloading and installing Spark 2.2.1 ..." | tee -a $LOG_FILE
-curl -Lko /tmp/spark-2.2.1-bin-without-hadoop.tgz http://apache.mirrors.lucidnetworks.net/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz
+echo "Downloading and installing Spark 2.4.2 ..." | tee -a $LOG_FILE
+curl -Lko /tmp/spark-2.4.2-bin-hadoop2.7.tgz http://archive.apache.org/dist/spark/spark-2.4.2/spark-2.4.2-bin-hadoop2.7.tgz
 mkdir -p /home/ubuntu/spark
 cd /home/ubuntu
-tar -xvf /tmp/spark-2.2.1-bin-without-hadoop.tgz -C spark --strip-components=1
+tar -xvf /tmp/spark-2.4.2-bin-hadoop2.7.tgz -C spark --strip-components=1
 
-echo "Configuring Spark 2.2.1 ..." | tee -a $LOG_FILE
+echo "Configuring Spark 2.4.2 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
 echo "# Spark environment setup" | sudo tee -a /home/ubuntu/.bash_profile
 export SPARK_HOME=/home/ubuntu/spark
@@ -336,6 +335,13 @@ cd /home/ubuntu/Agile_Data_Code_2
 
 # Install jq
 bash ./jq_install.sh
+
+# Pretty ls!
+echo 'alias ls="ls --color=auto"' | sudo tee -a /home/ubuntu/.bash_profile
+
+# Use Anaconda Python
+export PATH=/home/ubuntu/anaconda/bin:$PATH
+echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | sudo tee -a /home/ubuntu/.bash_profile
 
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chown ubuntu:ubuntu ~/.bash_profile
