@@ -171,11 +171,11 @@ rm -rf /home/vagrant/mongo-hadoop
 #
 # Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
 #
-echo "curl -sLko /tmp/elasticsearch-6.1.2.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.2.tar.gz"
-curl -sLko /tmp/elasticsearch-6.1.2.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.1.2.tar.gz
+echo "curl -sLko /tmp/elasticsearch-5.6.0.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.0.tar.gz"
+curl -sLko /tmp/elasticsearch-5.6.0.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.0.tar.gz
 mkdir /home/vagrant/elasticsearch
 cd /home/vagrant
-tar -xvzf /tmp/elasticsearch-6.1.2.tar.gz -C elasticsearch --strip-components=1
+tar -xvzf /tmp/elasticsearch-5.6.0.tar.gz -C elasticsearch --strip-components=1
 sudo chown -R vagrant /home/vagrant/elasticsearch
 sudo chgrp -R vagrant /home/vagrant/elasticsearch
 sudo mkdir -p /home/vagrant/elasticsearch/logs
@@ -219,13 +219,12 @@ echo "spark.jars /home/vagrant/Agile_Data_Code_2/lib/mongo-hadoop-spark-2.0.2.ja
 # Kafka install and setup
 #
 echo "" | tee -a $LOG_FILE
-echo "Downloading and installing Kafka version 1.0.0 for Spark 2.11 ..." | tee -a $LOG_FILE
-echo "curl -sLko /tmp/kafka_2.11-1.0.0.tgz https://archive.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz"
-curl -sLko /tmp/kafka_2.11-1.0.0.tgz https://archive.apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+echo "" | tee -a $LOG_FILE
+echo "Downloading and installing Kafka version 2.1.1 for Scala 2.11 ..." | tee -a $LOG_FILE
+curl -Lko /tmp/kafka_2.11-2.1.1.tgz https://www-us.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz
 mkdir -p /home/vagrant/kafka
 cd /home/vagrant/
-tar -xvzf /tmp/kafka_2.11-1.0.0.tgz -C kafka --strip-components=1 && rm -f /tmp/kafka_2.11-1.0.0.tgz
-rm -f /tmp/kafka_2.11-1.0.0.tgz
+tar -xvzf /tmp/kafka_2.11-2.1.1.tgz -C kafka --strip-components=1 && rm -f /tmp/kafka_2.11-2.1.1.tgz
 
 # Set the log dir to kafka/logs
 sed -i '/log.dirs=\/tmp\/kafka-logs/c\log.dirs=logs' /home/vagrant/kafka/config/server.properties
