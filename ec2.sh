@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-LOG_FILE="/home/ubuntu/ec2.sh.log"
+LOG_FILE="/tmp/ec2.sh.log"
 echo "Logging operations to '$LOG_FILE' ..."
 
 echo "" | tee -a $LOG_FILE # first echo replaces previous log output, other calls append
