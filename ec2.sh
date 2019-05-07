@@ -66,7 +66,7 @@ echo "Testing for existence of keypair 'agile_data_science' and key 'agile_data_
 KEY_PAIR_RESULTS=`aws ec2 describe-key-pairs | jq '.KeyPairs[] | select(.KeyName == "agile_data_science") | length'`
 
 # Remove the old key no matter what - too hard to manage otherwise
-if [ \( -n "$KEY_PAIR_RESULTS" \) -a \( -f "./agile_data_science.pem" \) ]
+if [ \( -n "$KEY_PAIR_RESULTS" \) -o \( -f "./agile_data_science.pem" \) ]
 then
   echo "Existing key pair 'agile_data_science' detected, removing ..." | tee -a $LOG_FILE
   rm -f ./agile_data_science.pem
