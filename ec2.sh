@@ -6,7 +6,7 @@ echo "Logging operations to '$LOG_FILE' ..."
 echo "" | tee -a $LOG_FILE # first echo replaces previous log output, other calls append
 echo "Welcome to Agile Data Science 2.0 :)" | tee -a $LOG_FILE
 echo "" | tee -a $LOG_FILE
-echo "I will launch an r4.xlarge instance in the default VPC for you, using a key and security group we will create." | tee -a $LOG_FILE
+echo "I will launch an r5.2xlarge instance in the default VPC for you, using a key and security group we will create." | tee -a $LOG_FILE
 echo "" | tee -a $LOG_FILE
 
 echo "The utility 'jq' is required for this script to detect the hostname of your ec2 instance ..." | tee -a $LOG_FILE
@@ -123,7 +123,7 @@ echo "The image for region '$DEFAULT_REGION' is '$UBUNTU_IMAGE_ID' ..."
 
 # Launch our instance, which ec2_bootstrap.sh will initialize, store the ReservationId in a file
 echo "" | tee -a $LOG_FILE
-echo "Initializing EBS optimized r4.xlarge EC2 instance in region '$DEFAULT_REGION' with security group 'agile_data_science', key name 'agile_data_science' and image id '$UBUNTU_IMAGE_ID' using the script 'aws/ec2_bootstrap.sh'" | tee -a $LOG_FILE
+echo "Initializing EBS optimized r5.2xlarge EC2 instance in region '$DEFAULT_REGION' with security group 'agile_data_science', key name 'agile_data_science' and image id '$UBUNTU_IMAGE_ID' using the script 'aws/ec2_bootstrap.sh'" | tee -a $LOG_FILE
 aws ec2 run-instances \
     --image-id $UBUNTU_IMAGE_ID \
     --security-groups agile_data_science \
