@@ -15,9 +15,8 @@ echo "Updating motd boot message to warn setup incomplete ..." | tee -a $LOG_FIL
 sudo apt-get install -y update-motd
 cat > /home/ubuntu/agile_data_science.message << END_HELLO
 
------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 This system is not yet done loading! It will not work yet. Come back in a few minutes. This can take as long as 20 minutes because there are large files to download.
-
 END_HELLO
 
 cat <<EOF | sudo tee /etc/update-motd.d/99-agile-data-science
