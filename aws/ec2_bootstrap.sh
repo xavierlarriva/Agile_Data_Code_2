@@ -2,6 +2,7 @@
 
 # Update and install critical packages
 LOG_FILE="/home/ubuntu/ec2_bootstrap.sh.log"
+touch $LOG_FILE
 echo "Logging to \"$LOG_FILE\" ..."
 
 echo "Installing essential packages via apt-get in non-interactive mode ..." | tee -a $LOG_FILE
