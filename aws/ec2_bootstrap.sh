@@ -16,34 +16,7 @@ sudo apt-get install -y update-motd
 cat > /home/ubuntu/agile_data_science.message << END_HELLO
 
 ------------------------------------------------------------------------------------------------------------------------
-Welcome to Agile Data Science 2.0!
-
-If the Agile_Data_Code_2 directory (and others for hadoop, spark, mongodb, elasticsearch, etc.) aren't present, please wait a few minutes for the install script to finish.
-
-Book reader, now you need to run the download scripts! To do so, run the following commands:
-
-cd Agile_Data_Code_2
-./download.sh
-
-Video viewers and free spirits, to skip ahead to chapter 8, you will need to run the following command:
-
-cd Agile_Data_Code_2
-ch08/download_data.sh
-
-Those working chapter 10, on the weather, will need to run the following commands:
-
-cd Agile_Data_Code_2
-./download_weather.sh
-
-Note: to run the web applications and view them at http://localhost:5000 you will now need to run the ec2_create_tunnel.sh script from your local machine.
-
-If you have problems, please file an issue at https://github.com/rjurney/Agile_Data_Code_2/issues
-------------------------------------------------------------------------------------------------------------------------
-
-For help building 'big data' applications like this one, or for training regarding same, contact Russell Jurney <rjurney@datasyndrome.com> or find more information at http://datasyndrome.com
-
-Enjoy! Russell Jurney @rjurney <russell.jurney@gmail.com> http://linkedin.com/in/russelljurney
-
+This system is not yet done loading! It will not work yet. Come back in a few minutes. This can take as long as 20 minutes because there are large files to download.
 END_HELLO
 
 cat <<EOF | sudo tee /etc/update-motd.d/99-agile-data-science
@@ -346,6 +319,50 @@ echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | sudo tee -a /home/ubuntu/.b
 
 # make sure we own ~/.bash_profile after all the 'sudo tee'
 sudo chown ubuntu:ubuntu ~/.bash_profile
+
+# Update the motd message to create instructions for users when they ssh in
+echo "Updating motd boot message with instructions for the user of the image ..." | tee -a $LOG_FILE
+sudo apt-get install -y update-motd
+cat > /home/ubuntu/agile_data_science.message << END_HELLO
+
+------------------------------------------------------------------------------------------------------------------------
+Welcome to Agile Data Science 2.0!
+
+If the Agile_Data_Code_2 directory (and others for hadoop, spark, mongodb, elasticsearch, etc.) aren't present, please wait a few minutes for the install script to finish.
+
+Book reader, now you need to run the download scripts! To do so, run the following commands:
+
+cd Agile_Data_Code_2
+./download.sh
+
+Video viewers and free spirits, to skip ahead to chapter 8, you will need to run the following command:
+
+cd Agile_Data_Code_2
+ch08/download_data.sh
+
+Those working chapter 10, on the weather, will need to run the following commands:
+
+cd Agile_Data_Code_2
+./download_weather.sh
+
+Note: to run the web applications and view them at http://localhost:5000 you will now need to run the ec2_create_tunnel.sh script from your local machine.
+
+If you have problems, please file an issue at https://github.com/rjurney/Agile_Data_Code_2/issues
+------------------------------------------------------------------------------------------------------------------------
+
+For help building 'big data' applications like this one, or for training regarding same, contact Russell Jurney <rjurney@datasyndrome.com> or find more information at http://datasyndrome.com
+
+Enjoy! Russell Jurney @rjurney <russell.jurney@gmail.com> http://linkedin.com/in/russelljurney
+
+END_HELLO
+
+cat <<EOF | sudo tee /etc/update-motd.d/99-agile-data-science
+#!/bin/bash
+
+cat /home/ubuntu/agile_data_science.message
+EOF
+sudo chmod 0755 /etc/update-motd.d/99-agile-data-science
+sudo update-motd
 
 # Cleanup
 echo "Cleaning up after our selves ..." | tee -a $LOG_FILE

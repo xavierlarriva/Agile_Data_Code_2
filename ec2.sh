@@ -124,6 +124,7 @@ echo "The image for region '$DEFAULT_REGION' is '$UBUNTU_IMAGE_ID' ..."
 # Launch our instance, which ec2_bootstrap.sh will initialize, store the ReservationId in a file
 echo "" | tee -a $LOG_FILE
 echo "Initializing EBS optimized r4.xlarge EC2 instance in region '$DEFAULT_REGION' with security group 'agile_data_science', key name 'agile_data_science' and image id '$UBUNTU_IMAGE_ID' using the script 'aws/ec2_bootstrap.sh'" | tee -a $LOG_FILE
+rm .reservation_id
 aws ec2 run-instances \
     --image-id $UBUNTU_IMAGE_ID \
     --security-groups agile_data_science \
@@ -151,6 +152,8 @@ INSTANCE_PUBLIC_HOSTNAME=`aws ec2 describe-instances | jq -c ".Reservations[] | 
 
 echo "The public hostname of the instance we just created is '$INSTANCE_PUBLIC_HOSTNAME' ..." | tee -a $LOG_FILE
 echo "Writing hostname to '.ec2_hostname' ..." | tee -a $LOG_FILE
+
+rm .ec2_hostname
 echo $INSTANCE_PUBLIC_HOSTNAME > .ec2_hostname
 echo "" | tee -a $LOG_FILE
 
