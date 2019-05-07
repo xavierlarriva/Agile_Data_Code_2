@@ -28,7 +28,7 @@ sudo chmod 0755 /etc/update-motd.d/99-agile-data-science
 sudo update-motd
 
 # Intall OpenJDK 8 - Oracle Java no longer available
-sudo add-apt-repository ppa:openjdk-r/ppa
+sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
 
@@ -319,7 +319,7 @@ echo "Updating motd boot message with instructions for the user of the image ...
 sudo apt-get install -y update-motd
 cat > /home/ubuntu/agile_data_science.message << END_HELLO
 
-------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
 Welcome to Agile Data Science 2.0!
 
 If the Agile_Data_Code_2 directory (and others for hadoop, spark, mongodb, elasticsearch, etc.) aren't present, please wait for the install script to finish.

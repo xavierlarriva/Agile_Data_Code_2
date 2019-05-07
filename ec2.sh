@@ -65,19 +65,22 @@ echo ""
 echo "Testing for existence of keypair 'agile_data_science' and key 'agile_data_science.pem' ..." | tee -a $LOG_FILE
 KEY_PAIR_RESULTS=`aws ec2 describe-key-pairs | jq '.KeyPairs[] | select(.KeyName == "agile_data_science") | length'`
 
-# If the key doesn't exist in EC2 or the file doesn't exist, create a new key called agile_data_science
+# Remove the old key no matter what - too hard to manage otherwise
 if [ \( -n "$KEY_PAIR_RESULTS" \) -a \( -f "./agile_data_science.pem" \) ]
 then
-  echo "Existing key pair 'agile_data_science' detected, will not recreate ..." | tee -a $LOG_FILE
-else
-  echo "Key pair 'agile_data_science' not found ..." | tee -a $LOG_FILE
-  echo "Generating keypair called 'agile_data_science' ..." | tee -a $LOG_FILE
-
-  aws ec2 create-key-pair --key-name agile_data_science|jq .KeyMaterial|sed -e 's/^"//' -e 's/"$//'| awk '{gsub(/\\n/,"\n")}1' > ./agile_data_science.pem
-  echo "Changing permissions of 'agile_data_science.pem' to 0600 ..." | tee -a $LOG_FILE
-  chmod 0600 ./agile_data_science.pem
+  echo "Existing key pair 'agile_data_science' detected, removing ..." | tee -a $LOG_FILE
+  rm -f ./agile_data_science.pem
+  aws ec2 delete-key-pair --key-name agile_data_science
 fi
 
+# Now create a new key no matter what
+echo "Generating new keypair called 'agile_data_science' ..." | tee -a $LOG_FILE
+
+aws ec2 create-key-pair --key-name agile_data_science|jq .KeyMaterial|sed -e 's/^"//' -e 's/"$//'| awk '{gsub(/\\n/,"\n")}1' > ./agile_data_science.pem
+echo "Changing permissions of 'agile_data_science.pem' to 0600 ..." | tee -a $LOG_FILE
+chmod 0600 ./agile_data_science.pem
+
+# Now get the region...
 echo "" | tee -a $LOG_FILE
 echo "Detecting the default region..." | tee -a $LOG_FILE
 DEFAULT_REGION=`aws configure get region`
@@ -88,35 +91,39 @@ echo "The default region is '$DEFAULT_REGION'" | tee -a $LOG_FILE
 # See https://cloud-images.ubuntu.com/locator/ec2/ if this needs fixing
 echo "Determining the image ID to use according to region..." | tee -a $LOG_FILE
 case $DEFAULT_REGION in
-  ap-south-1) UBUNTU_IMAGE_ID=ami-94e4b5fb
+  ap-south-1) UBUNTU_IMAGE_ID=ami-082b19ea285e9cd03
   ;;
-  us-east-1) UBUNTU_IMAGE_ID=ami-28516d52
+  us-east-1) UBUNTU_IMAGE_ID=ami-0a399aac42a48483d
   ;;
-  ap-northeast-1) UBUNTU_IMAGE_ID=ami-49640b2f
+  ap-northeast-1) UBUNTU_IMAGE_ID=ami-044384ef1ff500b21
   ;;
-  eu-west-1) UBUNTU_IMAGE_ID=ami-3b5f535b
+  eu-west-1) UBUNTU_IMAGE_ID=ami-061fc58b1cebb1376
   ;;
-  ap-southeast-1) UBUNTU_IMAGE_ID=ami-26fc875a
+  ap-southeast-1) UBUNTU_IMAGE_ID=ami-055ce3ce3faaf86b7
   ;;
-  us-west-1) UBUNTU_IMAGE_ID=ami-b87819c1
+  us-west-1) UBUNTU_IMAGE_ID=ami-0cfa083fddef879bd
   ;;
-  eu-central-1) UBUNTU_IMAGE_ID=ami-dd51c9b2
+  eu-central-1) UBUNTU_IMAGE_ID=ami-0366f703a7edcf070
   ;;
-  sa-east-1) UBUNTU_IMAGE_ID=ami-bc9bd7d0
+  sa-east-1) UBUNTU_IMAGE_ID=ami-00068b651c5f021bc
   ;;
-  ap-southeast-2) UBUNTU_IMAGE_ID=ami-78ac551a
+  ap-southeast-2) UBUNTU_IMAGE_ID=ami-0390e0896ca0fc1e5
   ;;
-  ap-northeast-2) UBUNTU_IMAGE_ID=ami-5771d239
+  ap-northeast-2) UBUNTU_IMAGE_ID=ami-04c2099a34a1ac6f6
   ;;
-  us-west-2) UBUNTU_IMAGE_ID=ami-70873908
+  us-west-2) UBUNTU_IMAGE_ID=ami-06a6b4750fd1c15b3
   ;;
-  us-east-2) UBUNTU_IMAGE_ID=ami-6a5f6a0f
+  us-east-2) UBUNTU_IMAGE_ID=ami-090e94393aedd60f5
   ;;
-  eu-west-2) UBUNTU_IMAGE_ID=ami-261a0042
+  eu-west-2) UBUNTU_IMAGE_ID=ami-0a54b4adf39df16b2
   ;;
-  ca-central-1) UBUNTU_IMAGE_ID=ami-043fba60
+  ca-central-1) UBUNTU_IMAGE_ID=ami-009ef39e13f1ec001
   ;;
-  eu-west-3) UBUNTU_IMAGE_ID=ami-d7ce78aa
+  eu-west-3) UBUNTU_IMAGE_ID=ami-0cc2c05af0e9a4d16
+  ;;
+  eu-north-1) UBUNTU_IMAGE_ID=ami-1ea12960
+  ;;
+  ap-northeast-3) UBUNTU_IMAGE_ID=ami-07a20a542c2f6108a
   ;;
 esac
 echo "The image for region '$DEFAULT_REGION' is '$UBUNTU_IMAGE_ID' ..."
@@ -124,7 +131,7 @@ echo "The image for region '$DEFAULT_REGION' is '$UBUNTU_IMAGE_ID' ..."
 # Launch our instance, which ec2_bootstrap.sh will initialize, store the ReservationId in a file
 echo "" | tee -a $LOG_FILE
 echo "Initializing EBS optimized r4.xlarge EC2 instance in region '$DEFAULT_REGION' with security group 'agile_data_science', key name 'agile_data_science' and image id '$UBUNTU_IMAGE_ID' using the script 'aws/ec2_bootstrap.sh'" | tee -a $LOG_FILE
-rm .reservation_id
+rm -f .reservation_id
 aws ec2 run-instances \
     --image-id $UBUNTU_IMAGE_ID \
     --security-groups agile_data_science \
@@ -153,7 +160,7 @@ INSTANCE_PUBLIC_HOSTNAME=`aws ec2 describe-instances | jq -c ".Reservations[] | 
 echo "The public hostname of the instance we just created is '$INSTANCE_PUBLIC_HOSTNAME' ..." | tee -a $LOG_FILE
 echo "Writing hostname to '.ec2_hostname' ..." | tee -a $LOG_FILE
 
-rm .ec2_hostname
+rm -f .ec2_hostname
 echo $INSTANCE_PUBLIC_HOSTNAME > .ec2_hostname
 echo "" | tee -a $LOG_FILE
 
