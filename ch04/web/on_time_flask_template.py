@@ -143,7 +143,7 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
   
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query)
+  results = elastic.search(query, 'agile_data_science')
   flights, flight_count = process_search(results)
   
   # Persist search parameters in the form template
@@ -159,7 +159,18 @@ def search_flights():
     dest=dest,
     tail_number=tail_number,
     flight_number=flight_number
-    )
+  )
+
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
+@app.route('/shutdown')
+def shutdown():
+  shutdown_server()
+  return 'Server shutting down...'
 
 if __name__ == "__main__":
   app.run(
