@@ -166,8 +166,16 @@ echo "" | tee -a $LOG_FILE
 
 echo "Now we will tag this ec2 instance and name it 'agile_data_science_ec2' ..." | tee -a $LOG_FILE
 INSTANCE_ID=`aws ec2 describe-instances | jq -c ".Reservations[] | select(.ReservationId | contains(\"$RESERVATION_ID\"))| .Instances[0].InstanceId" | tr -d '"'`
-aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=agile_data_science_ec2
-echo "" | tee -a $LOG_FILE
+
+if [ ! -z "$INSTANCE_ID" ] # Only run tag if INSTANCE_ID is defined
+then
+  echo "Got instance id \"$INSTANCE_ID\" ... tagging it ..."
+  aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=agile_data_science_ec2
+  echo "" | tee -a $LOG_FILE
+else
+  echo "Got no instance id! Exiting!"
+  exit 1
+fi
 
 echo "After a few minutes (for it to initialize), you may ssh to this machine via the command in red: " | tee -a $LOG_FILE
 # Make the ssh instructions red
