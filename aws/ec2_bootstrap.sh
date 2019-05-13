@@ -96,6 +96,9 @@ curl -Lko /tmp/spark-2.4.2-bin-hadoop2.7.tgz http://archive.apache.org/dist/spar
 mkdir -p /home/ubuntu/spark
 cd /home/ubuntu
 tar -xvf /tmp/spark-2.4.2-bin-hadoop2.7.tgz -C spark --strip-components=1
+cd spark/python
+sudo /home/anaconda/bin/python setup.py install
+cd /home/ubuntu
 
 echo "Configuring Spark 2.4.2 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
@@ -113,9 +116,9 @@ echo 'export PATH=$PATH:$SPARK_HOME/bin' | sudo tee -a /home/ubuntu/.bash_profil
 cp /home/ubuntu/spark/conf/spark-defaults.conf.template /home/ubuntu/spark/conf/spark-defaults.conf
 echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 
-# Configure Spark for an r5.2xlarge with Python3
-echo "spark.driver.memory 50g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
-echo "spark.executor.cores 8" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+# Configure Spark for an r5.xlarge with Python3
+echo "spark.driver.memory 25g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+echo "spark.executor.cores 4" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "PYSPARK_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 echo "PYSPARK_DRIVER_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 
