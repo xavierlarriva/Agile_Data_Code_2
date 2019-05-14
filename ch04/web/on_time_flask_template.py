@@ -11,6 +11,7 @@ elastic = ElasticSearch(config.ELASTIC_URL)
 # Process elasticsearch hits and return flights records
 def process_search(results):
   records = []
+  total = 0
   if results['hits'] and results['hits']['hits']:
     total = results['hits']['total']
     hits = results['hits']['hits']
@@ -81,7 +82,7 @@ def list_flights(origin, dest, flight_date):
   )
   flight_count = flights.count()
   flights = flights.skip(start).limit(width)
-    
+  
   return render_template(
     'flights.html', 
     flights=flights, 
@@ -121,8 +122,7 @@ def search_flights():
         'must': []}
     },
     'sort': [
-      {'FlightDate': 'asx'},
-      '_score'
+      {'FlightDate': 'asc'},
     ],
     'from': start,
     'size': config.RECORDS_PER_PAGE
@@ -143,7 +143,7 @@ def search_flights():
     query['query']['bool']['must'].append({'match': {'FlightNum': flight_number}})
   
   # Query elasticsearch, process to get records and count
-  results = elastic.search(query, 'agile_data_science')
+  results = elastic.search(query)
   flights, flight_count = process_search(results)
   
   # Persist search parameters in the form template
