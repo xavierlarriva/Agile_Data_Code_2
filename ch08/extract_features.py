@@ -42,6 +42,9 @@ def main(base_path):
   FROM on_time_performance
   """)
   simple_on_time_features.show()
+
+  # Sample 10% to make executable inside the notebook
+  simple_on_time_features = simple_on_time_features.sample(False, 0.1, seed=27)
   
   # Filter nulls, they can't help us
   filled_on_time_features = simple_on_time_features.filter(
