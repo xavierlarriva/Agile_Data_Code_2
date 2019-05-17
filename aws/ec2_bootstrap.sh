@@ -16,7 +16,9 @@ sudo apt-get install -y update-motd
 cat > /home/ubuntu/agile_data_science.message << END_HELLO
 
 ------------------------------------------------------------------------------------------------------------------------
+
 This system is not yet done loading! It will not work yet. Come back in a few minutes. This can take as long as 20 minutes because there are large files to download.
+
 END_HELLO
 
 cat <<EOF | sudo tee /etc/update-motd.d/99-agile-data-science
@@ -97,8 +99,6 @@ mkdir -p /home/ubuntu/spark
 cd /home/ubuntu
 tar -xvf /tmp/spark-2.4.2-bin-hadoop2.7.tgz -C spark --strip-components=1
 cd spark/python
-sudo /home/anaconda/bin/python setup.py install
-cd /home/ubuntu
 
 echo "Configuring Spark 2.4.2 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
@@ -199,7 +199,7 @@ curl -Lko /tmp/elasticsearch-hadoop-6.1.3.zip http://download.elastic.co/hadoop/
 unzip /tmp/elasticsearch-hadoop-6.1.3.zip
 mv /home/ubuntu/elasticsearch-hadoop-6.1.3 /home/ubuntu/elasticsearch-hadoop
 cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-hadoop-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
-cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
+cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.11-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
 echo "spark.speculation false" | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 rm -f /tmp/elasticsearch-hadoop-6.1.3.zip
 rm -rf /home/ubuntu/elasticsearch-hadoop/conf/spark-defaults.conf
@@ -207,8 +207,6 @@ rm -rf /home/ubuntu/elasticsearch-hadoop/conf/spark-defaults.conf
 sudo chown -R ubuntu:ubuntu /home/ubuntu/elasticsearch-hadoop
 
 # Install and add snappy-java and lzo-java to our classpath below via spark.jars
-echo "" | tee -a $LOG_FILE
-echo "Installing snappy-java and lzo-java and adding them to our classpath ..." | tee -a $LOG_FILE
 cd /home/ubuntu/Agile_Data_Code_2
 curl -Lko lib/snappy-java-1.1.7.1.jar http://central.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar
 curl -Lko lib/lzo-hadoop-1.0.5.jar http://central.maven.org/maven2/org/anarres/lzo/lzo-hadoop/1.0.5/lzo-hadoop-1.0.5.jar
