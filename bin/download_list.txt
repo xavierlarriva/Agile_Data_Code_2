@@ -1,6 +1,4 @@
 ./ch07/Making_Predictions.ipynb
-./ch07/Predicting flight delays with sklearn.ipynb
-./ch09/Improving flight delay predictions with sklearn.ipynb
 ./ch09/Improving_Predictions.ipynb
 ./ch09/Debugging Prediction Problems.ipynb
 ./Part_II_-_Climbing_the_Pyramid.ipynb
