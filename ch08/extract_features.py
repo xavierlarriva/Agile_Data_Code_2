@@ -42,10 +42,10 @@ def main(base_path):
   FROM on_time_performance
   """)
   simple_on_time_features.show()
-
+  
   # Sample 10% to make executable inside the notebook
   simple_on_time_features = simple_on_time_features.sample(False, 0.1, seed=27)
-  
+
   # Filter nulls, they can't help us
   filled_on_time_features = simple_on_time_features.filter(
     simple_on_time_features.ArrDelay.isNotNull()
@@ -129,6 +129,7 @@ def main(base_path):
   )
   
   # Store as a single json file and bzip2 it
+  os.system("sudo rm -rf {}/data/simple_flight_delay_features.json".format(base_path))
   sorted_features.repartition(1).write.mode("overwrite").json("{}/data/simple_flight_delay_features.json".format(base_path))
   os.system("cp {}/data/simple_flight_delay_features.json/part* {}/data/simple_flight_delay_features.jsonl".format(base_path, base_path))
   os.system("bzip2 --best {}/data/simple_flight_delay_features.jsonl".format(base_path))
