@@ -30,3 +30,4 @@ deep/data
 ghostdriver.log
 cassandra
 janusgraph
+deep
