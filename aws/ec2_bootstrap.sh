@@ -2,6 +2,7 @@
 
 # Update and install critical packages
 LOG_FILE="/home/ubuntu/ec2_bootstrap.sh.log"
+touch $LOG_FILE
 echo "Logging to \"$LOG_FILE\" ..."
 
 echo "Installing essential packages via apt-get in non-interactive mode ..." | tee -a $LOG_FILE
@@ -9,39 +10,14 @@ sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o DPkg::o
 sudo apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev \
     software-properties-common debconf-utils apt-transport-https
 
-# Update the motd message to create instructions for users when they ssh in
-echo "Updating motd boot message with instructions for the user of the image ..." | tee -a $LOG_FILE
+# Update the motd message to warn incompleteness
+echo "Updating motd boot message to warn setup incomplete ..." | tee -a $LOG_FILE
 sudo apt-get install -y update-motd
 cat > /home/ubuntu/agile_data_science.message << END_HELLO
 
 ------------------------------------------------------------------------------------------------------------------------
-Welcome to Agile Data Science 2.0!
 
-If the Agile_Data_Code_2 directory (and others for hadoop, spark, mongodb, elasticsearch, etc.) aren't present, please wait a few minutes for the install script to finish.
-
-Book reader, now you need to run the download scripts! To do so, run the following commands:
-
-cd Agile_Data_Code_2
-./download.sh
-
-Video viewers and free spirits, to skip ahead to chapter 8, you will need to run the following command:
-
-cd Agile_Data_Code_2
-ch08/download_data.sh
-
-Those working chapter 10, on the weather, will need to run the following commands:
-
-cd Agile_Data_Code_2
-./download_weather.sh
-
-Note: to run the web applications and view them at http://localhost:5000 you will now need to run the ec2_create_tunnel.sh script from your local machine.
-
-If you have problems, please file an issue at https://github.com/rjurney/Agile_Data_Code_2/issues
-------------------------------------------------------------------------------------------------------------------------
-
-For help building 'big data' applications like this one, or for training regarding same, contact Russell Jurney <rjurney@datasyndrome.com> or find more information at http://datasyndrome.com
-
-Enjoy! Russell Jurney @rjurney <russell.jurney@gmail.com> http://linkedin.com/in/russelljurney
+This system is not yet done loading! It will not work yet. Come back in a few minutes. This can take as long as 20 minutes because there are large files to download.
 
 END_HELLO
 
@@ -54,7 +30,7 @@ sudo chmod 0755 /etc/update-motd.d/99-agile-data-science
 sudo update-motd
 
 # Intall OpenJDK 8 - Oracle Java no longer available
-sudo add-apt-repository ppa:openjdk-r/ppa
+sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
 
@@ -71,7 +47,7 @@ export PATH=/home/ubuntu/anaconda/bin:$PATH # setup .bash_profile at end
 
 sudo chown -R ubuntu:ubuntu /home/ubuntu/anaconda
 
-# Install Clone repo, install Python dependencies
+# Clone repo, install Python dependencies
 echo "Cloning https://github.com/rjurney/Agile_Data_Code_2 repository and installing dependencies ..." \
   | tee -a $LOG_FILE
 cd /home/ubuntu
@@ -122,6 +98,7 @@ curl -Lko /tmp/spark-2.4.2-bin-hadoop2.7.tgz http://archive.apache.org/dist/spar
 mkdir -p /home/ubuntu/spark
 cd /home/ubuntu
 tar -xvf /tmp/spark-2.4.2-bin-hadoop2.7.tgz -C spark --strip-components=1
+cd spark/python
 
 echo "Configuring Spark 2.4.2 ..." | tee -a $LOG_FILE
 echo "" >> /home/ubuntu/.bash_profile
@@ -139,13 +116,13 @@ echo 'export PATH=$PATH:$SPARK_HOME/bin' | sudo tee -a /home/ubuntu/.bash_profil
 cp /home/ubuntu/spark/conf/spark-defaults.conf.template /home/ubuntu/spark/conf/spark-defaults.conf
 echo 'spark.io.compression.codec org.apache.spark.io.SnappyCompressionCodec' | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 
-# Configure Spark for an r5.2xlarge, use Python3
-echo "spark.driver.memory 50g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
-echo "spark.executor.cores 8" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+# Configure Spark for an r5.xlarge with Python3
+echo "spark.driver.memory 25g" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
+echo "spark.executor.cores 4" | sudo tee -a $SPARK_HOME/conf/spark-defaults.conf
 echo "PYSPARK_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 echo "PYSPARK_DRIVER_PYTHON=python3" | sudo tee -a $SPARK_HOME/conf/spark-env.sh
 
-# Setup log4j config to reduce logging output
+# Setup log4j config to reduce logging
 cp $SPARK_HOME/conf/log4j.properties.template $SPARK_HOME/conf/log4j.properties
 sed -i 's/INFO/ERROR/g' $SPARK_HOME/conf/log4j.properties
 
@@ -153,7 +130,7 @@ sed -i 's/INFO/ERROR/g' $SPARK_HOME/conf/log4j.properties
 echo "Giving spark to user ubuntu ..." | tee -a $LOG_FILE
 sudo chown -R ubuntu:ubuntu /home/ubuntu/spark
 
-# Install MongoDB and dependencies
+# Install MongoDB and deps
 echo "" | tee -a $LOG_FILE
 echo "Installing MongoDB via apt-get ..." | tee -a $LOG_FILE
 sudo apt-get install -y mongodb
@@ -168,7 +145,7 @@ sudo systemctl start mongodb
 echo "Fetching the MongoDB Java driver ..." | tee -a $LOG_FILE
 curl -Lko /home/ubuntu/Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.2/mongo-java-driver-3.4.2.jar
 
-# Install the mongo-hadoop project in the mongo-hadoop directory in the root of our project.
+# Install the mongo-hadoop project
 echo "" | tee -a $LOG_FILE
 echo "Downloading and installing the mongo-hadoop project version 2.0.2 ..." | tee -a $LOG_FILE
 curl -Lko /tmp/mongo-hadoop-r2.0.2.tar.gz https://github.com/mongodb/mongo-hadoop/archive/r2.0.2.tar.gz
@@ -198,7 +175,7 @@ cd /home/ubuntu
 echo "Nuking the source to mongo-hadoop ..." | tee -a $LOG_FILE
 rm -rf /home/ubuntu/mongo-hadoop
 
-# Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
+# Install ElasticSearch and the Elasticsearch for Hadoop package
 echo "curl -sLko /tmp/elasticsearch-5.6.0.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.0.tar.gz"
 curl -sLko /tmp/elasticsearch-5.6.0.tar.gz https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.0.tar.gz
 mkdir /home/ubuntu/elasticsearch
@@ -209,9 +186,9 @@ sudo mkdir -p /home/ubuntu/elasticsearch/logs
 sudo chown -R ubuntu:ubuntu /home/ubuntu/elasticsearch/logs
 
 # Run elasticsearch
-sudo -u ubuntu /home/ubuntu/elasticsearch/bin/elasticsearch -d # re-run if you shutdown your computer
+sudo -u ubuntu /home/ubuntu/elasticsearch/bin/elasticsearch -d
 
-# Run a query to test - it will error but should return json
+# Run a query to test - should return error json
 echo "Testing Elasticsearch with a query ..." | tee -a $LOG_FILE
 curl 'http://localhost:9200/agile_data_science/on_time_performance/_search?q=Origin:ATL&pretty' | tee -a $LOG_FILE
 
@@ -222,18 +199,14 @@ curl -Lko /tmp/elasticsearch-hadoop-6.1.3.zip http://download.elastic.co/hadoop/
 unzip /tmp/elasticsearch-hadoop-6.1.3.zip
 mv /home/ubuntu/elasticsearch-hadoop-6.1.3 /home/ubuntu/elasticsearch-hadoop
 cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-hadoop-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
-cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
+cp /home/ubuntu/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.11-6.1.3.jar /home/ubuntu/Agile_Data_Code_2/lib/
 echo "spark.speculation false" | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 rm -f /tmp/elasticsearch-hadoop-6.1.3.zip
 rm -rf /home/ubuntu/elasticsearch-hadoop/conf/spark-defaults.conf
 
 sudo chown -R ubuntu:ubuntu /home/ubuntu/elasticsearch-hadoop
 
-# Spark jar setup
-
 # Install and add snappy-java and lzo-java to our classpath below via spark.jars
-echo "" | tee -a $LOG_FILE
-echo "Installing snappy-java and lzo-java and adding them to our classpath ..." | tee -a $LOG_FILE
 cd /home/ubuntu/Agile_Data_Code_2
 curl -Lko lib/snappy-java-1.1.7.1.jar http://central.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar
 curl -Lko lib/lzo-hadoop-1.0.5.jar http://central.maven.org/maven2/org/anarres/lzo/lzo-hadoop/1.0.5/lzo-hadoop-1.0.5.jar
@@ -242,9 +215,7 @@ cd /home/ubuntu
 # Set the spark.jars path
 echo "spark.jars /home/ubuntu/Agile_Data_Code_2/lib/mongo-hadoop-spark-2.0.2.jar,/home/ubuntu/Agile_Data_Code_2/lib/mongo-java-driver-3.4.2.jar,/home/ubuntu/Agile_Data_Code_2/lib/mongo-hadoop-2.0.2.jar,/home/ubuntu/Agile_Data_Code_2/lib/elasticsearch-spark-20_2.10-6.1.3.jar,/home/ubuntu/Agile_Data_Code_2/lib/snappy-java-1.1.7.1.jar,/home/ubuntu/Agile_Data_Code_2/lib/lzo-hadoop-1.0.5.jar,/home/ubuntu/Agile_Data_Code_2/lib/commons-httpclient-3.1.jar" | sudo tee -a /home/ubuntu/spark/conf/spark-defaults.conf
 
-#
 # Kafka install and setup
-#
 echo "" | tee -a $LOG_FILE
 echo "Downloading and installing Kafka version 2.1.1 for Scala 2.11 ..." | tee -a $LOG_FILE
 curl -Lko /tmp/kafka_2.11-2.1.1.tgz https://www-us.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz
@@ -260,7 +231,7 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/kafka
 echo "Configuring logging for kafka to go into kafka/logs directory ..." | tee -a $LOG_FILE
 sed -i '/log.dirs=\/tmp\/kafka-logs/c\log.dirs=logs' /home/ubuntu/kafka/config/server.properties
 
-# Run zookeeper (which kafka depends on), then Kafka
+# Run zookeeper, then Kafka
 echo "Running Zookeeper as a daemon ..." | tee -a $LOG_FILE
 sudo -H -u ubuntu /home/ubuntu/kafka/bin/zookeeper-server-start.sh -daemon /home/ubuntu/kafka/config/zookeeper.properties
 echo "Running Kafka Server as a daemon ..." | tee -a $LOG_FILE
@@ -282,10 +253,8 @@ airflow initdb
 airflow webserver -D &
 airflow scheduler -D &
 
-echo "Giving airflow directory to user ubuntu yet again ..." | tee -a $LOG_FILE
+echo "Giving airflow directory to user ubuntu yet again and putting same in .bash_profile ..." | tee -a $LOG_FILE
 sudo chown -R ubuntu:ubuntu /home/ubuntu/airflow
-
-echo "Adding chown airflow commands to /home/ubuntu/.bash_profile ..." | tee -a $LOG_FILE
 echo "sudo chown -R ubuntu:ubuntu /home/ubuntu/airflow" | sudo tee -a /home/ubuntu/.bash_profile
 
 # Jupyter server setup
@@ -301,10 +270,10 @@ cd /home/ubuntu/Agile_Data_Code_2
 jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 cd
 
-# Install Ant to build Cassandra
+# Install Ant
 sudo apt-get install -y ant
 
-# Install Cassandra - must build from source as the latest 3.11.1 build is broken...
+# Install Cassandra from source as the latest 3.11.1 build is broken...
 echo "" | tee -a $LOG_FILE
 echo "Installing Cassandra ..."
 git clone https://github.com/apache/cassandra
@@ -336,17 +305,51 @@ cd /home/ubuntu/Agile_Data_Code_2
 # Install jq
 bash ./jq_install.sh
 
-# Pretty ls!
+# Pretty
 echo 'alias ls="ls --color=auto"' | sudo tee -a /home/ubuntu/.bash_profile
 
 # Use Anaconda Python
 export PATH=/home/ubuntu/anaconda/bin:$PATH
 echo 'export PATH=/home/ubuntu/anaconda/bin:$PATH' | sudo tee -a /home/ubuntu/.bash_profile
 
-# make sure we own ~/.bash_profile after all the 'sudo tee'
+# make sure we own ~/.bash_profile after lots of 'sudo tee'
 sudo chown ubuntu:ubuntu ~/.bash_profile
 
+# Update the motd message to create instructions for ssh users
+echo "Updating motd boot message with instructions for the user of the image ..." | tee -a $LOG_FILE
+sudo apt-get install -y update-motd
+cat > /home/ubuntu/agile_data_science.message << END_HELLO
+
+----------------------------------------------------------------------------------------------------------------------
+Welcome to Agile Data Science 2.0!
+
+If the Agile_Data_Code_2 directory (and others for hadoop, spark, mongodb, elasticsearch, etc.) aren't present, please wait for the install script to finish.
+
+The data has already been downloaded but if you need to do so:
+
+cd Agile_Data_Code_2
+./download.sh
+
+Note: to run the web applications and view them at http://localhost:5000 you will now need to run the ec2_create_tunnel.sh script from your local machine.
+
+If you have problems, please file an issue at https://github.com/rjurney/Agile_Data_Code_2/issues
+------------------------------------------------------------------------------------------------------------------------
+
+For help building 'big data' applications like this one, or for training regarding same, contact Russell Jurney <rjurney@datasyndrome.com> or at http://datasyndrome.com
+
+Enjoy! Russell Jurney @rjurney <russell.jurney@gmail.com> http://linkedin.com/in/russelljurney
+
+END_HELLO
+
+cat <<EOF | sudo tee /etc/update-motd.d/99-agile-data-science
+#!/bin/bash
+
+cat /home/ubuntu/agile_data_science.message
+EOF
+sudo chmod 0755 /etc/update-motd.d/99-agile-data-science
+sudo update-motd
+
 # Cleanup
-echo "Cleaning up after our selves ..." | tee -a $LOG_FILE
+echo "Cleaning up ..." | tee -a $LOG_FILE
 sudo apt-get clean
 sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -28,3 +28,6 @@ models
 deep/data
 .vscode
 ghostdriver.log
+cassandra
+janusgraph
+deep

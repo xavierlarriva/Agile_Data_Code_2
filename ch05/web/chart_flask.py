@@ -158,6 +158,32 @@ def total_flights():
     ])
   return render_template('total_flights.html', total_flights=total_flights)
 
+@app.route("/busy_airports.json")
+def busy_airports_json():
+  airports = client.agile_data_science.busy_airports.find({}, 
+    sort = [
+      ('count', -1)
+    ])
+  return json_util.dumps(airports, ensure_ascii=False)
+
+# Controller: Fetch a flight chart
+@app.route("/busy_airports")
+def busy_airports():
+  airports = client.agile_data_science.busy_airports.find({}, 
+    sort = [
+      ('count', -1)
+    ])
+  return render_template('top_routes.html', airports=airports)
+  
+@app.route("/busy_airports_chart")
+def busy_airports_chart():
+  airports = client.agile_data_science.busy_airports.find({}, 
+    sort = [
+      ('count', -1)
+    ])
+  return render_template('top_routes_chart.html', airports=airports)
+
+
 # Serve the chart's data via an asynchronous request (formerly known as 'AJAX')
 @app.route("/total_flights.json")
 def total_flights_json():
@@ -177,6 +203,24 @@ def total_flights_chart():
       ('Month', 1)
     ])
   return render_template('total_flights_chart.html', total_flights=total_flights)
+  
+# Controller: Fetch a flight chart
+@app.route("/flight_delay_weekly.json")
+def flight_delay_weekly_json():
+  weekly_delay = client.agile_data_science.flights_delay_weekly.find({}, 
+    sort = [
+      ('DayOfWeek', 1)
+    ])
+  return json_util.dumps(weekly_delay, ensure_ascii=False)
+  
+# Controller: Fetch a flight chart
+@app.route("/flight_delay_weekly")
+def flight_delay_weekly():
+  weekly_delay = client.agile_data_science.flights_delay_weekly.find({}, 
+    sort = [
+      ('DayOfWeek', 1)
+    ])
+  return render_template('flights_delay_weekly.html', total_flights=weekly_delay)
 
 # Controller: Fetch a flight chart 2.0
 @app.route("/total_flights_chart_2")
@@ -193,6 +237,20 @@ def total_flights_chart_2():
 def flights_per_airplane(tail_number):
   flights = client.agile_data_science.flights_per_airplane.find_one({'TailNum': tail_number})
   return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number)
+
+@app.route("/v2/airplane/flights/<tail_number>")
+def flights_per_airplane_v2(tail_number):
+  flights = client.agile_data_science.flights_per_airplane.find_one({'TailNum': tail_number})
+  descriptions = client.agile_data_science.flights_per_airplane_v2.find_one({'TailNum': tail_number})
+  print(descriptions['Description'])
+  if descriptions is None:
+    descriptions = []
+  images = client.agile_data_science.airplane_images.find_one({'TailNum': tail_number})
+  if images is None:
+    images = []
+
+  
+  return render_template('flights_per_airplane.html', flights=flights, images=images, descriptions=descriptions['Description'], tail_number=tail_number)
 
 if __name__ == "__main__":
   app.run(

@@ -11,6 +11,7 @@ elastic = ElasticSearch(config.ELASTIC_URL)
 # Process elasticsearch hits and return flights records
 def process_search(results):
   records = []
+  total = 0
   if results['hits'] and results['hits']['hits']:
     total = results['hits']['total']
     hits = results['hits']['hits']
@@ -81,7 +82,7 @@ def list_flights(origin, dest, flight_date):
   )
   flight_count = flights.count()
   flights = flights.skip(start).limit(width)
-    
+  
   return render_template(
     'flights.html', 
     flights=flights, 
@@ -120,12 +121,19 @@ def search_flights():
       'bool': {
         'must': []}
     },
+<<<<<<< HEAD
+      'sort': [
+      {'FlightDate': 'asc'},
+     ],
+     'from': start,
+     'size': config.RECORDS_PER_PAGE
+=======
     'sort': [
-      {'FlightDate': 'asx'},
-      '_score'
+      {'FlightDate': 'asc'},
     ],
     'from': start,
     'size': config.RECORDS_PER_PAGE
+>>>>>>> e67f89d00d650b9208180d83b115727e7af238fa
   }
   
   # Add any search parameters present
@@ -159,7 +167,18 @@ def search_flights():
     dest=dest,
     tail_number=tail_number,
     flight_number=flight_number
-    )
+  )
+
+def shutdown_server():
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
+
+@app.route('/shutdown')
+def shutdown():
+  shutdown_server()
+  return 'Server shutting down...'
 
 if __name__ == "__main__":
   app.run(
