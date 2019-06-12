@@ -44,7 +44,7 @@ then
   echo "Security group 'agile_data_science' not present ..." | tee -a $LOG_FILE
   echo "Creating security group 'agile_data_science' ..." | tee -a $LOG_FILE
   aws ec2 create-security-group --group-name agile_data_science --description "Security group for the book, Agile Data Science 2.0" | tee -a $LOG_FILE
-  AUTHORIZE_22=true
+  SKIP_AUTHORIZE_22=false
 else
   echo "Security group 'agile_data_science' already exists, skipping creation ..." | tee -a $LOG_FILE
 fi
@@ -53,12 +53,12 @@ echo ""
 echo "Detecting external IP address ..." | tee -a $LOG_FILE
 EXTERNAL_IP=`dig +short myip.opendns.com @resolver1.opendns.com`
 
-if [ "$AUTHORIZE_22" == true ]
+if [ "$SKIP_AUTHORIZE_22" == true ]
 then
+  echo "Skipping authorization of port 22 ..." | tee -a $LOG_FILE
+else
   echo "Authorizing port 22 to your external IP ($EXTERNAL_IP) in security group 'agile_data_science' ..." | tee -a $LOG_FILE
   aws ec2 authorize-security-group-ingress --group-name agile_data_science --protocol tcp --cidr $EXTERNAL_IP/32 --port 22
-else
-  echo "Skipping authorization of port 22 ..." | tee -a $LOG_FILE
 fi
 
 echo ""
