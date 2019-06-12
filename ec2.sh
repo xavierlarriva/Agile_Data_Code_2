@@ -53,7 +53,7 @@ echo ""
 echo "Detecting external IP address ..." | tee -a $LOG_FILE
 EXTERNAL_IP=`dig +short myip.opendns.com @resolver1.opendns.com`
 
-if [ "$SKIP_AUTHORIZE_22" == false ]
+if [ "$SKIP_AUTHORIZE_22" == true ]
 then
   echo "Skipping authorization of port 22 ..." | tee -a $LOG_FILE
 else
