@@ -71,6 +71,8 @@ Installation takes a few minutes, using Vagrant and Virtualbox.
 **Note: Vagrant/Virtualbox method requires 9GB free RAM, which will mean closing most programs on a 16GB Macbook Pro. If you don't close most everything, you will run out of RAM and your system will crash. Use the EC2 method if this is a problem for you.**
 
 ```
+vagrant box update
+vagrant init
 vagrant up
 vagrant ssh
 ```
