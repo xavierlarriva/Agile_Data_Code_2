@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://app.vagrantup.com/boxes/search
   config.vm.box = "ubuntu/bionic64"
-  config.disksize.size = '20GB'
+  config.disksize.size = '30GB'
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,

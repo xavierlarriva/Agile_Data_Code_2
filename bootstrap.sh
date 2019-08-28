@@ -3,6 +3,13 @@
 sudo chown -R vagrant /home/vagrant
 sudo chgrp -R vagrant /home/vagrant
 
+# Setup a swap partition
+sudo fallocate -l 8G /swapfile
+sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
 #
 # Update & install dependencies
 #
