@@ -72,7 +72,6 @@ Installation takes a few minutes, using Vagrant and Virtualbox.
 
 ```
 vagrant box update
-vagrant init
 vagrant up
 vagrant ssh
 ```
