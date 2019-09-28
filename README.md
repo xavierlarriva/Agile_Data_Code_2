@@ -66,6 +66,8 @@ Now jump ahead to "Downloading Data".
 
 ### Vagrant/Virtualbox Install
 
+**Note: Vagrant 2.2+ required. The Ubuntu package is out of date so check the version with: `vagrant —version`
+
 Installation takes a few minutes, using Vagrant and Virtualbox. 
 
 **Note: Vagrant/Virtualbox method requires 9GB free RAM, which will mean closing most programs on a 16GB Macbook Pro. If you don't close most everything, you will run out of RAM and your system will crash. Use the EC2 method if this is a problem for you.**
