@@ -66,7 +66,7 @@ Now jump ahead to "Downloading Data".
 
 ### Vagrant/Virtualbox Install
 
-**Note: Vagrant 2.2+ required. The Ubuntu package is out of date so check the version with: `vagrant —version`
+**Note: Vagrant 2.2+ required.** The Ubuntu package is out of date so check the version with: `vagrant —version`
 
 Installation takes a few minutes, using Vagrant and Virtualbox. 
 
