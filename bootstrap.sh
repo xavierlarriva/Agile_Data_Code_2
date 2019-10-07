@@ -3,6 +3,13 @@
 sudo chown -R vagrant /home/vagrant
 sudo chgrp -R vagrant /home/vagrant
 
+# Setup a swap partition
+sudo fallocate -l 8G /swapfile
+sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
 #
 # Update & install dependencies
 #
@@ -55,7 +62,7 @@ cd /home/vagrant/Agile_Data_Code_2
 export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2
 echo "export PROJECT_HOME=/home/vagrant/Agile_Data_Code_2" | sudo tee -a /home/vagrant/.bash_profile
 
-conda install -y python=3.5
+conda install -y python=3.6.8
 conda install -y iso8601 numpy scipy scikit-learn matplotlib ipython jupyter
 pip install bs4 Flask beautifulsoup4 frozendict geopy kafka-python py4j pymongo pyelasticsearch requests selenium tabulate tldextract wikipedia findspark imongo-kernel
 
