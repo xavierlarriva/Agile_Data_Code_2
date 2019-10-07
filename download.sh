@@ -31,3 +31,8 @@ curl -Lko $PROJECT_HOME/data/ata.txt http://av-info.faa.gov/data/ACRef/tab/ata.t
 curl -Lko $PROJECT_HOME/data/compt.txt http://av-info.faa.gov/data/ACRef/tab/compt.txt
 curl -Lko $PROJECT_HOME/data/engine.txt http://av-info.faa.gov/data/ACRef/tab/engine.txt
 curl -Lko $PROJECT_HOME/data/prop.txt http://av-info.faa.gov/data/ACRef/tab/prop.txt
+
+# Features computed for chapter 8 example
+curl -Lko /tmp/simple_flight_delay_features.jsonl.bz2 http://s3.amazonaws.com/agile_data_science/simple_flight_delay_features.jsonl.bz2
+mv /tmp/simple_flight_delay_features.jsonl.bz2 $PROJECT_HOME/data/simple_flight_delay_features.jsonl.bz2
+
