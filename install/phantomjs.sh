@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 sudo apt-get -y update
 sudo apt-get -y install build-essential chrpath libssl-dev libxft-dev
 sudo apt-get -y install libfreetype6 libfreetype6-dev
