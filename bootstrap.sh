@@ -311,6 +311,7 @@ rm /tmp/janusgraph-0.2.0-hadoop2.zip
 # Download data
 cd /home/vagrant/Agile_Data_Code_2
 ./download.sh
+sudo chown -R vagrant:vagrant $PROJECT_HOME/data
 
 # Install phantomjs
 /home/vagrant/Agile_Data_Code_2/install/phantomjs.sh
