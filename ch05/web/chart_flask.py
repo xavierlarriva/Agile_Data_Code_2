@@ -8,6 +8,7 @@ import json
 from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
 
+
 # Process elasticsearch hits and return flights records
 def process_search(results):
   records = []
@@ -19,6 +20,7 @@ def process_search(results):
       records.append(record)
   return records, total
 
+
 # Calculate offsets for fetching lists of flights from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
   offsets = {}
@@ -28,6 +30,7 @@ def get_navigation_offsets(offset1, offset2, increment):
  'bottom_offset': max(offset1 - increment, 0)} # Don't go < 0
   return offsets
 
+
 # Strip the existing start and end parameters from the query string
 def strip_place(url):
   try:
@@ -36,9 +39,11 @@ def strip_place(url):
     return url
   return p
 
+
 # Set up Flask and Mongo
 app = Flask(__name__)
 client = MongoClient()
+
 
 # Chapter 5 controller: Fetch a flight and display it
 @app.route("/on_time_performance")
@@ -55,6 +60,7 @@ def on_time_performance():
   })
   
   return render_template('flight.html', flight=flight)
+
 
 # Chapter 5 controller: Fetch all flights between cities on a given day and display them
 @app.route("/flights/<origin>/<dest>/<flight_date>")
@@ -74,6 +80,7 @@ def list_flights(origin, dest, flight_date):
   flight_count = flights.count()
   
   return render_template('flights.html', flights=flights, flight_date=flight_date, flight_count=flight_count)
+
 
 @app.route("/flights/search")
 @app.route("/flights/search/")
@@ -148,6 +155,7 @@ def search_flights():
     flight_number=flight_number
     )
 
+
 # Controller: Fetch a flight table
 @app.route("/total_flights")
 def total_flights():
@@ -158,6 +166,7 @@ def total_flights():
     ])
   return render_template('total_flights.html', total_flights=total_flights)
 
+
 @app.route("/busy_airports.json")
 def busy_airports_json():
   airports = client.agile_data_science.busy_airports.find({}, 
@@ -165,6 +174,7 @@ def busy_airports_json():
       ('count', -1)
     ])
   return json_util.dumps(airports, ensure_ascii=False)
+
 
 # Controller: Fetch a flight chart
 @app.route("/busy_airports")
@@ -174,7 +184,8 @@ def busy_airports():
       ('count', -1)
     ])
   return render_template('top_routes.html', airports=airports)
-  
+
+
 @app.route("/busy_airports_chart")
 def busy_airports_chart():
   airports = client.agile_data_science.busy_airports.find({}, 
@@ -194,6 +205,7 @@ def total_flights_json():
     ])
   return json_util.dumps(total_flights, ensure_ascii=False)
 
+
 # Controller: Fetch a flight chart
 @app.route("/total_flights_chart")
 def total_flights_chart():
@@ -203,7 +215,8 @@ def total_flights_chart():
       ('Month', 1)
     ])
   return render_template('total_flights_chart.html', total_flights=total_flights)
-  
+
+
 # Controller: Fetch a flight chart
 @app.route("/flight_delay_weekly.json")
 def flight_delay_weekly_json():
@@ -212,7 +225,8 @@ def flight_delay_weekly_json():
       ('DayOfWeek', 1)
     ])
   return json_util.dumps(weekly_delay, ensure_ascii=False)
-  
+
+
 # Controller: Fetch a flight chart
 @app.route("/flight_delay_weekly")
 def flight_delay_weekly():
@@ -221,6 +235,7 @@ def flight_delay_weekly():
       ('DayOfWeek', 1)
     ])
   return render_template('flights_delay_weekly.html', total_flights=weekly_delay)
+
 
 # Controller: Fetch a flight chart 2.0
 @app.route("/total_flights_chart_2")
@@ -232,11 +247,13 @@ def total_flights_chart_2():
     ])
   return render_template('total_flights_chart_2.html', total_flights=total_flights)
 
+
 # Controller: Fetch an airplane and display its flights
 @app.route("/airplane/flights/<tail_number>")
 def flights_per_airplane(tail_number):
   flights = client.agile_data_science.flights_per_airplane.find_one({'TailNum': tail_number})
-  return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number)
+  return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number, images=[])
+
 
 @app.route("/v2/airplane/flights/<tail_number>")
 def flights_per_airplane_v2(tail_number):
@@ -249,8 +266,8 @@ def flights_per_airplane_v2(tail_number):
   if images is None:
     images = []
 
-  
   return render_template('flights_per_airplane.html', flights=flights, images=images, descriptions=descriptions['Description'], tail_number=tail_number)
+
 
 if __name__ == "__main__":
   app.run(
