@@ -1,6 +1,6 @@
 import sys, os, re
 from flask import Flask, render_template, request
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 from bson import json_util
 import config
 import json
@@ -252,7 +252,7 @@ def total_flights_chart_2():
 @app.route("/airplane/flights/<tail_number>")
 def flights_per_airplane(tail_number):
   flights = client.agile_data_science.flights_per_airplane.find_one({'TailNum': tail_number})
-  return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number, images=[])
+  return render_template('flights_per_airplane.html', flights=flights, tail_number=tail_number)
 
 
 @app.route("/v2/airplane/flights/<tail_number>")
@@ -266,7 +266,13 @@ def flights_per_airplane_v2(tail_number):
   if images is None:
     images = []
 
-  return render_template('flights_per_airplane.html', flights=flights, images=images, descriptions=descriptions['Description'], tail_number=tail_number)
+  return render_template(
+    'flights_per_airplane_2.html',
+    flights=flights,
+    images=images,
+    descriptions=descriptions['Description'],
+    tail_number=tail_number,
+  )
 
 
 if __name__ == "__main__":
