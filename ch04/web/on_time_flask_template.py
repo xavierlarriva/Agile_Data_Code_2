@@ -8,6 +8,7 @@ import json
 from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
 
+
 # Process elasticsearch hits and return flights records
 def process_search(results):
   records = []
@@ -20,6 +21,7 @@ def process_search(results):
       records.append(record)
   return records, total
 
+
 # Calculate offsets for fetching lists of flights from MongoDB
 def get_navigation_offsets(offset1, offset2, increment):
   offsets = {}
@@ -29,6 +31,7 @@ def get_navigation_offsets(offset1, offset2, increment):
  'bottom_offset': max(offset1 - increment, 0)} # Don't go < 0
   return offsets
 
+
 # Strip the existing start and end parameters from the query string
 def strip_place(url):
   try:
@@ -37,9 +40,11 @@ def strip_place(url):
     return url
   return p
 
+
 # Set up Flask and Mongo
 app = Flask(__name__)
 client = MongoClient()
+
 
 # Controller: Fetch a flight and display it
 @app.route("/on_time_performance")
@@ -56,6 +61,7 @@ def on_time_performance():
   })
   
   return render_template('flight.html', flight=flight)
+
 
 # Controller: Fetch all flights between cities on a given day and display them
 @app.route("/flights/<origin>/<dest>/<flight_date>")
@@ -92,6 +98,7 @@ def list_flights(origin, dest, flight_date):
     nav_offsets=nav_offsets
   )
 
+
 @app.route("/flights/search")
 @app.route("/flights/search/")
 def search_flights():
@@ -110,7 +117,6 @@ def search_flights():
   end = request.args.get('end') or config.RECORDS_PER_PAGE
   end = int(end)
   
-  print(request.args)
   # Navigation path and offset setup
   nav_path = strip_place(request.url)
   nav_offsets = get_navigation_offsets(start, end, config.RECORDS_PER_PAGE)
@@ -161,16 +167,19 @@ def search_flights():
     flight_number=flight_number
   )
 
+
 def shutdown_server():
   func = request.environ.get('werkzeug.server.shutdown')
   if func is None:
     raise RuntimeError('Not running with the Werkzeug Server')
   func()
 
+
 @app.route('/shutdown')
 def shutdown():
   shutdown_server()
   return 'Server shutting down...'
+
 
 if __name__ == "__main__":
   app.run(
