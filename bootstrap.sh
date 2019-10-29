@@ -269,18 +269,6 @@ airflow initdb
 airflow webserver -D &
 airflow scheduler -D &
 
-# Install Apache Zeppelin
-echo "curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz"
-curl -sLko /tmp/zeppelin-0.7.3-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-0.7.3/zeppelin-0.7.3-bin-all.tgz
-mkdir zeppelin
-tar -xvzf /tmp/zeppelin-0.7.3-bin-all.tgz -C zeppelin --strip-components=1
-
-# Configure Zeppelin
-cp zeppelin/conf/zeppelin-env.sh.template zeppelin/conf/zeppelin-env.sh
-echo "export SPARK_HOME=$PROJECT_HOME/spark" >> zeppelin/conf/zeppelin-env.sh
-echo "export SPARK_MASTER=local" >> zeppelin/conf/zeppelin-env.sh
-echo "export SPARK_CLASSPATH=" >> zeppelin/conf/zeppelin-env.sh
-
 # Jupyter server setup
 jupyter notebook --generate-config
 mkdir /root/.jupyter/
@@ -292,7 +280,7 @@ cd /home/vagrant/Agile_Data_Code_2
 jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 cd
 
-# =======
+#
 sudo chown -R vagrant /home/vagrant/airflow
 sudo chgrp -R vagrant /home/vagrant/airflow
 
@@ -323,6 +311,9 @@ rm /tmp/janusgraph-0.2.0-hadoop2.zip
 # Download data
 cd /home/vagrant/Agile_Data_Code_2
 ./download.sh
+cd ch04
+./download.sh
+cd ..
 
 # Install phantomjs
 /home/vagrant/Agile_Data_Code_2/install/phantomjs.sh
