@@ -42,5 +42,5 @@ curl -Lko /tmp/on_time_performance.parquet.tgz http://s3.amazonaws.com/agile_dat
 tar -xvzf /tmp/on_time_performance.parquet.tgz -C $PROJECT_HOME/data/
 
 # Download january data for examples
-curl -Lko /tmp/january_performance.parquet.tgz http://s3.amazonaws.com/agile_data_science/january_performance.tgz
+curl -Lko /tmp/january_performance.parquet.tgz http://s3.amazonaws.com/agile_data_science/january_performance.parquet.tgz
 tar -xvzf /tmp/january_performance.parquet.tgz -C $PROJECT_HOME/data/
