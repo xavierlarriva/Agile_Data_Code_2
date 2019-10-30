@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   # The default disk size of the ubuntu-bionic64 box is 10 GB, which
   # is not enough space to handle all current software and data files.
-  # We use the vagrant-disksize plugin to specify a 20 GB disk.
+  # We use the vagrant-disksize plugin to specify a 50 GB disk.
   config.vagrant.plugins = 'vagrant-disksize'
 
   # The most common configuration options are documented and commented below.
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://app.vagrantup.com/boxes/search
   config.vm.box = "ubuntu/bionic64"
-  config.disksize.size = '30GB'
+  config.disksize.size = '50GB'
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
