@@ -35,6 +35,7 @@ curl -Lko $PROJECT_HOME/data/prop.txt http://av-info.faa.gov/data/ACRef/tab/prop
 # Features computed for chapter 8 example
 curl -Lko /tmp/simple_flight_delay_features.jsonl.bz2 http://s3.amazonaws.com/agile_data_science/simple_flight_delay_features.jsonl.bz2
 mv /tmp/simple_flight_delay_features.jsonl.bz2 $PROJECT_HOME/data/simple_flight_delay_features.jsonl.bz2
+bzip2 -d $PROJECT_HOME/data/simple_flight_delay_features.jsonl.bz2
 
 # Download parquet data for examples
 curl -Lko /tmp/on_time_performance.parquet.tgz http://s3.amazonaws.com/agile_data_science/on_time_performance.parquet.tgz
