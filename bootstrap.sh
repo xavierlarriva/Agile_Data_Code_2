@@ -277,7 +277,7 @@ mkdir /root/certs
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -subj "/C=US" -keyout /root/certs/mycert.pem -out /root/certs/mycert.pem
 
 cd /home/vagrant/Agile_Data_Code_2
-jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
+sudo -u vagrant /home/vagrant/anaconda/bin/jupyter notebook --ip=0.0.0.0 --NotebookApp.token= --allow-root --no-browser &
 cd
 
 #
