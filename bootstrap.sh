@@ -100,11 +100,11 @@ sudo chgrp -R vagrant /home/vagrant/hadoop
 # Install Spark
 #
 echo "" | tee -a $LOG_FILE
-echo "Downloading and installing Spark 2.2.1 ..." | tee -a $LOG_FILE
-curl -Lko /tmp/spark-2.2.1-bin-without-hadoop.tgz https://archive.apache.org/dist/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz
+echo "Downloading and installing Spark 2.4.4 ..." | tee -a $LOG_FILE
+curl -Lko /tmp/spark-2.4.4-bin-without-hadoop.tgz https://archive.apache.org/dist/spark/spark-2.4.4/spark-2.4.4-bin-hadoop2.7.tgz
 mkdir -p /home/vagrant/spark
 cd /home/vagrant
-tar -xvf /tmp/spark-2.2.1-bin-without-hadoop.tgz -C spark --strip-components=1
+tar -xvf /tmp/spark-2.4.4-bin-without-hadoop.tgz -C spark --strip-components=1
 
 echo "" >> /home/vagrant/.bash_profile
 echo "# Spark environment setup" | sudo tee -a /home/vagrant/.bash_profile
@@ -319,6 +319,9 @@ sudo chown -R vagrant:vagrant $PROJECT_HOME/data
 # make sure we own /home/vagrant/.bash_profile after all the 'sudo tee'
 sudo chgrp vagrant /home/vagrant/.bash_profile
 sudo chown vagrant /home/vagrant/.bash_profile
+
+# Make everything belong to vagrant
+sudo chown -R vagrant:vagrant /home/vagrant
 
 #
 # Cleanup
