@@ -148,20 +148,7 @@ def main(base_path):
   predictions = predictions.drop("Features_vec")
   final_predictions = predictions.drop("indices").drop("values").drop("rawPrediction").drop("probability")
 
-  # # Store to Mongo
-  # if final_predictions.count() > 0:
-  #   final_predictions.rdd.map(lambda x: x.asDict()).saveToMongoDB(
-  #     "mongodb://localhost:27017/agile_data_science.flight_delay_classification_response"
-  #   )
-  
-  # # Do the classification and store to Mongo
-  # row_stream.foreachRDD(classify_prediction_requests)
-
-  # query = final_predictions.writeStream \
-  #   .format("console") \
-  #   .start()
-
-
+  # Store the results to MongoDB
   class MongoWriter:
 
     def open(self, partition_id, epoch_id):
