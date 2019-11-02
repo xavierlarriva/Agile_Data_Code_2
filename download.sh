@@ -46,3 +46,11 @@ tar -xvzf /tmp/on_time_performance.parquet.tgz -C $PROJECT_HOME/data/
 # Download january data for examples
 curl -Lko /tmp/january_performance.parquet.tgz http://s3.amazonaws.com/agile_data_science/january_performance.parquet.tgz
 tar -xvzf /tmp/january_performance.parquet.tgz -C $PROJECT_HOME/data/
+
+# Download tail numbers of fleet
+curl -Lko /tmp/tail_numbers.jsonl http://s3.amazonaws.com/agile_data_science/tail_numbers.jsonl
+mv /tmp/tail_numbers.jsonl $PROJECT_HOME/data/
+
+# Download airplanes of fleet
+curl -Lko /tmp/airplanes.jsonl http://s3.amazonaws.com/agile_data_science/airplanes.jsonl
+cp /tmp/airplanes.jsonl $PROJECT_HOME/data/
