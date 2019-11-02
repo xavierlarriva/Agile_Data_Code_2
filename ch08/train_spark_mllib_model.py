@@ -110,7 +110,7 @@ def main(base_path):
   
   # Apply the bucketizer
   ml_bucketized_features = arrival_bucketizer.transform(features_with_route)
-  ml_bucketized_features.select("DepDelay", "DepDelayBucket").show()
+  ml_bucketized_features.select("ArrDelay", "ArrDelayBucket").show()
   
   #
   # Extract features tools in with pyspark.ml.feature
