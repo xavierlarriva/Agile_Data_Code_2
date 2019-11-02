@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+#
+# Run with: spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.4 ch08/make_predictions_streaming.py $PROJECT_PATH
+#
+
 import sys, os, re
 import json
 import datetime, iso8601
@@ -23,8 +27,6 @@ MONGO_COLLECTION = 'flight_delay_classification_response'
 
 
 def main(base_path):
-
-
 
   spark = SparkSession.builder.config("spark.default.parallelism", 1).appName(APP_NAME).getOrCreate()
 
@@ -81,7 +83,17 @@ def main(base_path):
   #   "Timestamp": "2019-10-31T00:19:47.633280",
   #   "UUID": "af74b096-ecc7-4493-a79a-ebcdff699385"
   # }
-  
+
+  #
+  # Process Prediction Requests from Kafka
+  #
+  message_df = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", BROKERS) \
+    .option("subscribe", PREDICTION_TOPIC) \
+    .load()
+
   # Create a DataFrame out of the one-hot encoded RDD
   schema = T.StructType([
       T.StructField("Carrier", T.StringType()),
@@ -97,16 +109,6 @@ def main(base_path):
       T.StructField("Timestamp", T.TimestampType()),
       T.StructField("UUID", T.StringType()),
   ])
-
-  #
-  # Process Prediction Requests from Kafka
-  #
-  message_df = spark \
-    .readStream \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", BROKERS) \
-    .option("subscribe", PREDICTION_TOPIC) \
-    .load()
 
   prediction_requests_df = message_df.select(
     F.from_json(
