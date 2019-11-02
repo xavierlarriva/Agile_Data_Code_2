@@ -486,6 +486,7 @@ def classify_flight_delays_realtime():
   unique_id = str(uuid.uuid4())
   prediction_features['UUID'] = unique_id
   
+  print(json.dumps(prediction_features, sort_keys=True, indent=4))
   message_bytes = json.dumps(prediction_features).encode()
   producer.send(PREDICTION_TOPIC, message_bytes)
 
@@ -512,7 +513,7 @@ def classify_flight_delays_realtime_response(unique_id):
   
   prediction = client.agile_data_science.flight_delay_classification_response.find_one(
     {
-      "id": unique_id
+      "UUID": unique_id
     }
   )
   
