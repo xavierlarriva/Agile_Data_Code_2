@@ -95,10 +95,22 @@ def main(base_path):
   # Save the bucketizer
   arrival_bucketizer_path = "{}/models/arrival_bucketizer_2.0.bin".format(base_path)
   arrival_bucketizer.write().overwrite().save(arrival_bucketizer_path)
+
+  # Setup the Departure Bucketizer for other examples
+  splits = [-float("inf"), -15.0, 0, 30.0, float("inf")]
+  departure_bucketizer = Bucketizer(
+    splits=splits,
+    inputCol="DepDelay",
+    outputCol="DepDelayBucket"
+  )
+  
+  # Save the departure bucketizer
+  departure_bucketizer_path = "{}/models/arrival_bucketizer_2.0.bin".format(base_path)
+  departure_bucketizer.write().overwrite().save(departure_bucketizer_path)
   
   # Apply the bucketizer
   ml_bucketized_features = arrival_bucketizer.transform(features_with_route)
-  ml_bucketized_features.select("ArrDelay", "ArrDelayBucket").show()
+  ml_bucketized_features.select("DepDelay", "DepDelayBucket").show()
   
   #
   # Extract features tools in with pyspark.ml.feature
