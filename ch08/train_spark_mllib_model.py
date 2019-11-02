@@ -105,7 +105,7 @@ def main(base_path):
   )
   
   # Save the departure bucketizer
-  departure_bucketizer_path = "{}/models/arrival_bucketizer_2.0.bin".format(base_path)
+  departure_bucketizer_path = "{}/models/departure_bucketizer.bin".format(base_path)
   departure_bucketizer.write().overwrite().save(departure_bucketizer_path)
   
   # Apply the bucketizer
