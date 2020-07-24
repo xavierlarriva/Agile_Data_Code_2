@@ -18,8 +18,8 @@ RUN apt-get install -y software-properties-common debconf-utils && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 # Download and install Anaconda Python
-RUN curl -O https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
-RUN bash Anaconda3-2020.02-Linux-x86_64.sh -b -p /root/anaconda
+RUN curl -O https://repo.anaconda.com/archive/Anaconda2-4.2.0-Linux-x86_64.sh
+RUN bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /root/anaconda
 ENV PATH="/root/anaconda/bin:$PATH"
 
 #
