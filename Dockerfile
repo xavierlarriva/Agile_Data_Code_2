@@ -18,8 +18,9 @@ RUN apt-get install -y software-properties-common debconf-utils && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 # Download and install Anaconda Python
-RUN curl -O https://repo.anaconda.com/archive/Anaconda2-4.2.0-Linux-x86_64.sh
-RUN bash Anaconda2-4.2.0-Linux-x86_64.sh -b -p /root/anaconda
+RUN curl -O https://repo.anaconda.com/archive/Anaconda3-4.2.0-Linux-x86_64.sh
+RUN bash Anaconda3-4.2.0-Linux-x86_64.sh -b -p /root/anaconda
+RUN rm Anaconda3-4.2.0-Linux-x86_64.sh
 ENV PATH="/root/anaconda/bin:$PATH"
 
 #
@@ -43,6 +44,7 @@ ENV HADOOP_HOME=/root/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin
 ENV HADOOP_CLASSPATH=/root/hadoop/etc/hadoop/:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/etc/hadoop:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/contrib/capacity-scheduler/*.jar:/root/hadoop/contrib/capacity-scheduler/*.jar
 ENV HADOOP_CONF_DIR=/root/hadoop/etc/hadoop
+RUN rm hadoop-2.7.3.tar.gz
 
 #
 # Install Spark: may need to update this link... see http://spark.apache.org/downloads.html
