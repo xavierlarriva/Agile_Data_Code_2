@@ -30,15 +30,15 @@ WORKDIR /root/Agile_Data_Code_2
 ENV PROJECT_HOME=/Agile_Data_Code_2
 ADD requirements.txt .
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt 
+    pip install --ignore-installed -r requirements.txt 
 WORKDIR /root
 
 #
 # Install Hadoop: may need to update this link... see http://hadoop.apache.org/releases.html
 #
-RUN curl -O https://archive.apache.org/dist/hadoop/common/hadoop-2.10.0/hadoop-2.10.0.tar.gz
+RUN curl -O https://archive.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
 RUN mkdir -p /root/hadoop && \
-    tar -xvf hadoop-2.10.0.tar.gz -C hadoop --strip-components=1
+    tar -xvf hadoop-2.7.3.tar.gz -C hadoop --strip-components=1
 ENV HADOOP_HOME=/root/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin
 ENV HADOOP_CLASSPATH=/root/hadoop/etc/hadoop/:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/etc/hadoop:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/contrib/capacity-scheduler/*.jar:/root/hadoop/contrib/capacity-scheduler/*.jar
