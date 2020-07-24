@@ -14,9 +14,8 @@ RUN apt-get update && \
 RUN apt-get install -y software-properties-common debconf-utils && \
     add-apt-repository -y ppa:webupd8team/java && \
     apt-get update && \
-    echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections && \
-    apt-get install -y oracle-java8-installer
-ENV JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    apt-get install -y openjdk-8-jdk
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 # Download and install Anaconda Python
 ADD http://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh /tmp/Anaconda3-4.2.0-Linux-x86_64.sh
