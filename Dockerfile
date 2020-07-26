@@ -18,9 +18,9 @@ RUN apt-get install -y software-properties-common debconf-utils && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 # Download and install Anaconda Python
-RUN curl -O https://repo.anaconda.com/archive/Anaconda3-4.2.0-Linux-x86_64.sh
-RUN bash Anaconda3-4.2.0-Linux-x86_64.sh -b -p /root/anaconda
-RUN rm Anaconda3-4.2.0-Linux-x86_64.sh
+RUN curl -O https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+RUN bash Anaconda3-2020.02-Linux-x86_64.sh -b -p /root/anaconda
+RUN rm Anaconda3-2020.02-Linux-x86_64.sh
 ENV PATH="/root/anaconda/bin:$PATH"
 
 #
@@ -30,8 +30,7 @@ RUN git clone https://github.com/rjurney/Agile_Data_Code_2
 WORKDIR /root/Agile_Data_Code_2
 ENV PROJECT_HOME=/Agile_Data_Code_2
 ADD requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --ignore-installed -r requirements.txt 
+RUN pip install --upgrade pip && pip install -r requirements.txt 
 WORKDIR /root
 
 #
