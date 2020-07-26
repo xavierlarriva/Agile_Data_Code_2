@@ -48,7 +48,7 @@ RUN rm hadoop-2.7.3.tar.gz
 #
 # Install Spark: may need to update this link... see http://spark.apache.org/downloads.html
 #
-ADD http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-without-hadoop.tgz /tmp/spark-2.1.0-bin-without-hadoop.tgz
+ADD http://mirror.navercorp.com/apache/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz /tmp/spark-2.1.0-bin-without-hadoop.tgz
 RUN mkdir -p /root/spark && \
     tar -xvf /tmp/spark-2.1.0-bin-without-hadoop.tgz -C spark --strip-components=1
 ENV SPARK_HOME=/root/spark
