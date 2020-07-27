@@ -81,13 +81,13 @@ RUN apt-get update && \
 RUN mongod --fork --logpath /var/log/mongodb.log --config /etc/mongod.conf
 
 # Get the MongoDB Java Driver and put it in Agile_Data_Code_2
-ADD https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar /root/Agile_Data_Code_2/lib/
+ADD https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.11.0/mongo-java-driver-3.11.0.jar /root/Agile_Data_Code_2/lib/
 
 # Install the mongo-hadoop project in the mongo-hadoop directory in the root of our project.
-ADD https://github.com/mongodb/mongo-hadoop/archive/r1.5.2.tar.gz /tmp/mongo-hadoop-r1.5.2.tar.gz
+ADD https://github.com/mongodb/mongo-hadoop/archive/r2.0.2.tar.gz .
 RUN mkdir -p /root/mongo-hadoop && \
-    tar -xvzf /tmp/mongo-hadoop-r1.5.2.tar.gz -C mongo-hadoop --strip-components=1 && \
-    rm -f /tmp/mongo-hadoop-r1.5.2.tar.gz
+    tar -xvzf r2.0.2.tar.gz -C mongo-hadoop --strip-components=1 && \
+    rm -f r2.0.2.tar.gz
 WORKDIR /root/mongo-hadoop
 RUN /root/mongo-hadoop/gradlew jar
 WORKDIR /root
