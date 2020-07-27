@@ -107,21 +107,16 @@ RUN rm -rf /root/mongo-hadoop
 #
 # Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
 #
-ADD https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.tar.gz /tmp/elasticsearch-5.1.1.tar.gz
-RUN mkdir /root/elasticsearch && \
-    tar -xvzf /tmp/elasticsearch-5.1.1.tar.gz -C elasticsearch --strip-components=1 && \
-    /root/elasticsearch/bin/elasticsearch -d && \
-    rm -f /tmp/elasticsearch-5.1.1.tar.gz
+WORKDIR /root
+RUN curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-linux-x86_64.tar.gz
+RUN tar -xvzf elasticsearch-7.8.0-linux-x86_64.tar.gz
+ENV PATH=/root/elasticsearch-7.8.0/bin:$PATH
+RUN chown -R root:root /root/elasticsearch-7.8.0
 
 # Install Elasticsearch for Hadoop
-ADD http://download.elastic.co/hadoop/elasticsearch-hadoop-5.1.1.zip /tmp/elasticsearch-hadoop-5.1.1.zip
-RUN unzip /tmp/elasticsearch-hadoop-5.1.1.zip && \
-    mv /root/elasticsearch-hadoop-5.1.1 /root/elasticsearch-hadoop && \
-    cp /root/elasticsearch-hadoop/dist/elasticsearch-hadoop-5.1.1.jar /root/Agile_Data_Code_2/lib/ && \
-    cp /root/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-5.1.1.jar /root/Agile_Data_Code_2/lib/ && \
-    echo "spark.speculation false" >> /root/spark/conf/spark-defaults.conf && \
-    rm -f /tmp/elasticsearch-hadoop-5.1.1.zip && \
-    rm -rf /root/elasticsearch-hadoop
+WORKDIR /root/Agile_Data_Code_2/lib
+RUN curl -LO https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-hadoop/7.8.0/elasticsearch-hadoop-7.8.0.jar
+RUN curl -LO https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-spark-20_2.11/7.8.0/elasticsearch-spark-20_2.11-7.8.0.jar
 
 # Install and add snappy-java and lzo-java to our classpath below via spark.jars
 ADD https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.2.6/snappy-java-1.1.2.6.jar /tmp/snappy-java-1.1.2.6.jar
