@@ -29,7 +29,6 @@ ENV PATH="/root/anaconda/bin:$PATH"
 RUN git clone https://github.com/rjurney/Agile_Data_Code_2
 WORKDIR /root/Agile_Data_Code_2
 ENV PROJECT_HOME=/Agile_Data_Code_2
-ADD requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt 
 WORKDIR /root
 
