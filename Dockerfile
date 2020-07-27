@@ -78,7 +78,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org && \
     mkdir -p /data/db
 # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6 && \
-RUN /usr/bin/mongod --fork --logpath /var/log/mongodb.log
+RUN mongod --fork --logpath /var/log/mongodb.log --config /etc/mongod.conf
 
 # Get the MongoDB Java Driver and put it in Agile_Data_Code_2
 ADD https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar /root/Agile_Data_Code_2/lib/
