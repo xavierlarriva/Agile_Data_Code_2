@@ -47,9 +47,10 @@ RUN rm hadoop-2.7.3.tar.gz
 #
 # Install Spark: may need to update this link... see http://spark.apache.org/downloads.html
 #
-ADD http://mirror.navercorp.com/apache/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz /tmp/spark-2.1.0-bin-without-hadoop.tgz
+ADD http://mirror.navercorp.com/apache/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz .
 RUN mkdir -p /root/spark && \
-    tar -xvf /tmp/spark-2.1.0-bin-without-hadoop.tgz -C spark --strip-components=1
+    tar -xvf spark-3.0.0-bin-hadoop2.7.tgz -C spark --strip-components=1 && \
+    rm spark-3.0.0-bin-hadoop2.7.tgz
 ENV SPARK_HOME=/root/spark
 ENV HADOOP_CONF_DIR=/root/hadoop/etc/hadoop/
 ENV SPARK_DIST_CLASSPATH=/root/hadoop/etc/hadoop/:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/etc/hadoop:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/contrib/capacity-scheduler/*.jar:/root/hadoop/contrib/capacity-scheduler/*.jar
