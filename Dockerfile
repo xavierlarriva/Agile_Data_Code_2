@@ -130,6 +130,34 @@ RUN sed -i -e 's,#listeners=PLAINTEXT://:9092,listeners=PLAINTEXT://:9092,' /roo
 RUN /root/kafka/bin/zookeeper-server-start.sh -daemon /root/kafka/config/zookeeper.properties && \
     /root/kafka/bin/kafka-server-start.sh -daemon /root/kafka/config/server.properties
 
+#
+# Install and set up Airflow
+#
+# Install Apache Incubating Airflow
+RUN pip install airflow && \
+    mkdir /root/airflow && \
+    mkdir /root/airflow/dags && \
+    mkdir /root/airflow/logs && \
+    mkdir /root/airflow/plugins && \
+    airflow initdb && \
+    airflow webserver -D && \
+    airflow scheduler -D &
+
+#
+# Install and setup Zeppelin
+#
+WORKDIR /root
+ADD http://apache.mirror.cdnetworks.com/zeppelin/zeppelin-0.9.0-preview1/zeppelin-0.9.0-preview1-bin-all.tgz /tmp/zeppelin-0.9.0-preview1-bin-all.tgz
+RUN mkdir -p /root/zeppelin && \
+    tar -xvzf /tmp/zeppelin-0.9.0-preview1-bin-all.tgz -C zeppelin --strip-components=1 && \
+    rm -f /tmp/zeppelin-0.9.0-preview1-bin-all.tgz
+
+# Configure Zeppelin
+RUN cp /root/zeppelin/conf/zeppelin-env.sh.template /root/zeppelin/conf/zeppelin-env.sh && \
+    echo "export SPARK_HOME=/root/spark" >> /root/zeppelin/conf/zeppelin-env.sh && \
+    echo "export SPARK_MASTER=local" >> /root/zeppelin/conf/zeppelin-env.sh && \
+    echo "export SPARK_CLASSPATH=" >> /root/zeppelin/conf/zeppelin-env.sh
+
 # Remove all gz files
 RUN rm *gz *sh
 
