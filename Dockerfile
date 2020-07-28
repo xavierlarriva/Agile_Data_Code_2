@@ -109,6 +109,7 @@ RUN curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-
 RUN mkdir /root/elasticsearch && \
     tar -xvzf elasticsearch-7.8.0-linux-x86_64.tar.gz -C elasticsearch --strip-components=1
 ENV PATH=/root/elasticsearch/bin:$PATH
+RUN useradd es
 RUN chown es:es /root
 RUN chown -R es:es /root/elasticsearch
 
