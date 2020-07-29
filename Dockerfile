@@ -8,7 +8,7 @@ WORKDIR /root
 # Update apt-get and install things
 RUN apt-get autoclean
 RUN apt-get update && \
-    apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev
+    apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev vim
 
 # Setup Oracle Java8
 RUN apt-get install -y software-properties-common debconf-utils && \
@@ -20,7 +20,6 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 # Download and install Anaconda Python
 RUN curl -O https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
 RUN bash Anaconda3-2020.02-Linux-x86_64.sh -b -p /root/anaconda
-RUN rm Anaconda3-2020.02-Linux-x86_64.sh
 ENV PATH="/root/anaconda/bin:$PATH"
 
 #
@@ -43,14 +42,13 @@ ENV HADOOP_HOME=/root/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin
 ENV HADOOP_CLASSPATH=/root/hadoop/etc/hadoop/:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/etc/hadoop:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/contrib/capacity-scheduler/*.jar:/root/hadoop/contrib/capacity-scheduler/*.jar
 ENV HADOOP_CONF_DIR=/root/hadoop/etc/hadoop
-RUN rm hadoop-2.7.3.tar.gz
 
 #
 # Install Spark: may need to update this link... see http://spark.apache.org/downloads.html
 #
-ADD http://mirror.navercorp.com/apache/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz /tmp/spark-2.1.0-bin-without-hadoop.tgz
+ADD http://mirror.navercorp.com/apache/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz .
 RUN mkdir -p /root/spark && \
-    tar -xvf /tmp/spark-2.1.0-bin-without-hadoop.tgz -C spark --strip-components=1
+    tar -xvf spark-2.4.6-bin-hadoop2.7.tgz -C spark --strip-components=1
 ENV SPARK_HOME=/root/spark
 ENV HADOOP_CONF_DIR=/root/hadoop/etc/hadoop/
 ENV SPARK_DIST_CLASSPATH=/root/hadoop/etc/hadoop/:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/etc/hadoop:/root/hadoop/share/hadoop/common/lib/*:/root/hadoop/share/hadoop/common/*:/root/hadoop/share/hadoop/hdfs:/root/hadoop/share/hadoop/hdfs/lib/*:/root/hadoop/share/hadoop/hdfs/*:/root/hadoop/share/hadoop/yarn/lib/*:/root/hadoop/share/hadoop/yarn/*:/root/hadoop/share/hadoop/mapreduce/lib/*:/root/hadoop/share/hadoop/mapreduce/*:/root/hadoop/contrib/capacity-scheduler/*.jar:/root/hadoop/contrib/capacity-scheduler/*.jar
@@ -78,16 +76,15 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org && \
     mkdir -p /data/db
 # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6 && \
-RUN /usr/bin/mongod --fork --logpath /var/log/mongodb.log
+RUN mongod --fork --logpath /var/log/mongodb.log --config /etc/mongod.conf
 
 # Get the MongoDB Java Driver and put it in Agile_Data_Code_2
-ADD https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar /root/Agile_Data_Code_2/lib/
+ADD https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.11.0/mongo-java-driver-3.11.0.jar /root/Agile_Data_Code_2/lib/
 
 # Install the mongo-hadoop project in the mongo-hadoop directory in the root of our project.
-ADD https://github.com/mongodb/mongo-hadoop/archive/r1.5.2.tar.gz /tmp/mongo-hadoop-r1.5.2.tar.gz
+ADD https://github.com/mongodb/mongo-hadoop/archive/r2.0.2.tar.gz .
 RUN mkdir -p /root/mongo-hadoop && \
-    tar -xvzf /tmp/mongo-hadoop-r1.5.2.tar.gz -C mongo-hadoop --strip-components=1 && \
-    rm -f /tmp/mongo-hadoop-r1.5.2.tar.gz
+    tar -xvzf r2.0.2.tar.gz -C mongo-hadoop --strip-components=1
 WORKDIR /root/mongo-hadoop
 RUN /root/mongo-hadoop/gradlew jar
 WORKDIR /root
@@ -107,40 +104,30 @@ RUN rm -rf /root/mongo-hadoop
 #
 # Install ElasticSearch in the elasticsearch directory in the root of our project, and the Elasticsearch for Hadoop package
 #
-ADD https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.tar.gz /tmp/elasticsearch-5.1.1.tar.gz
+WORKDIR /root
+RUN curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-linux-x86_64.tar.gz
 RUN mkdir /root/elasticsearch && \
-    tar -xvzf /tmp/elasticsearch-5.1.1.tar.gz -C elasticsearch --strip-components=1 && \
-    /root/elasticsearch/bin/elasticsearch -d && \
-    rm -f /tmp/elasticsearch-5.1.1.tar.gz
+    tar -xvzf elasticsearch-7.8.0-linux-x86_64.tar.gz -C elasticsearch --strip-components=1
+ENV PATH=/root/elasticsearch/bin:$PATH
+RUN useradd es
+RUN chown es:es /root
+RUN chown -R es:es /root/elasticsearch
 
 # Install Elasticsearch for Hadoop
-ADD http://download.elastic.co/hadoop/elasticsearch-hadoop-5.1.1.zip /tmp/elasticsearch-hadoop-5.1.1.zip
-RUN unzip /tmp/elasticsearch-hadoop-5.1.1.zip && \
-    mv /root/elasticsearch-hadoop-5.1.1 /root/elasticsearch-hadoop && \
-    cp /root/elasticsearch-hadoop/dist/elasticsearch-hadoop-5.1.1.jar /root/Agile_Data_Code_2/lib/ && \
-    cp /root/elasticsearch-hadoop/dist/elasticsearch-spark-20_2.10-5.1.1.jar /root/Agile_Data_Code_2/lib/ && \
-    echo "spark.speculation false" >> /root/spark/conf/spark-defaults.conf && \
-    rm -f /tmp/elasticsearch-hadoop-5.1.1.zip && \
-    rm -rf /root/elasticsearch-hadoop
-
-# Install and add snappy-java and lzo-java to our classpath below via spark.jars
-ADD https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.2.6/snappy-java-1.1.2.6.jar /tmp/snappy-java-1.1.2.6.jar
-ADD https://repo1.maven.org/maven2/org/anarres/lzo/lzo-hadoop/1.0.5/lzo-hadoop-1.0.5.jar /tmp/lzo-hadoop-1.0.5.jar
-RUN mv /tmp/snappy-java-1.1.2.6.jar /root/Agile_Data_Code_2/lib/ && \
-    mv /tmp/lzo-hadoop-1.0.5.jar /root/Agile_Data_Code_2/lib/
-
-# Setup mongo and elasticsearch jars for Spark
-RUN echo "spark.jars /root/Agile_Data_Code_2/lib/mongo-hadoop-spark-1.5.2.jar,/root/Agile_Data_Code_2/lib/mongo-java-driver-3.4.0.jar,/root/Agile_Data_Code_2/lib/mongo-hadoop-1.5.2.jar,/root/Agile_Data_Code_2/lib/elasticsearch-spark-20_2.10-5.1.1.jar,/root/Agile_Data_Code_2/lib/snappy-java-1.1.2.6.jar,/root/Agile_Data_Code_2/lib/lzo-hadoop-1.0.5.jar" >> /root/spark/conf/spark-defaults.conf
+WORKDIR /root/Agile_Data_Code_2/lib
+RUN curl -LO https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-hadoop/7.8.0/elasticsearch-hadoop-7.8.0.jar
+RUN curl -LO https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-spark-20_2.11/7.8.0/elasticsearch-spark-20_2.11-7.8.0.jar
 
 #
 # Install and setup Kafka
 #
-ADD http://apache.mirror.cdnetworks.com/kafka/2.4.1/kafka_2.11-2.4.1.tgz /tmp/kafka_2.11-2.4.1.tgz
+WORKDIR /root
+ADD http://mirror.navercorp.com/apache/kafka/2.5.0/kafka_2.12-2.5.0.tgz .
 RUN mkdir -p /root/kafka && \
-    tar -xvzf /tmp/kafka_2.11-2.4.1.tgz -C kafka --strip-components=1 && \
-    rm -f /tmp/kafka_2.11-2.4.1.tgz
+    tar -xvzf kafka_2.12-2.5.0.tgz -C kafka --strip-components=1
 
 # Run zookeeper (which kafka depends on), then Kafka
+RUN sed -i -e 's,#listeners=PLAINTEXT://:9092,listeners=PLAINTEXT://:9092,' /root/kafka/config/server.properties
 RUN /root/kafka/bin/zookeeper-server-start.sh -daemon /root/kafka/config/zookeeper.properties && \
     /root/kafka/bin/kafka-server-start.sh -daemon /root/kafka/config/server.properties
 
@@ -172,6 +159,9 @@ RUN cp /root/zeppelin/conf/zeppelin-env.sh.template /root/zeppelin/conf/zeppelin
     echo "export SPARK_MASTER=local" >> /root/zeppelin/conf/zeppelin-env.sh && \
     echo "export SPARK_CLASSPATH=" >> /root/zeppelin/conf/zeppelin-env.sh
 
+# Remove all gz files
+RUN rm *gz *sh
+
 #
 # Download the data
 #
@@ -200,59 +190,6 @@ RUN for i in $(seq -w 1 12); do curl -Lko /tmp/QCLCD2015${i}.zip http://www.ncdc
     unzip -o /tmp/QCLCD2015${i}.zip && \
     gzip 2015${i}*.txt && \
     rm -f /tmp/QCLCD2015${i}.zip; done
-
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201501.zip /tmp/QCLCD201501.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201502.zip /tmp/QCLCD201502.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201503.zip /tmp/QCLCD201503.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201504.zip /tmp/QCLCD201504.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201505.zip /tmp/QCLCD201505.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201506.zip /tmp/QCLCD201506.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201507.zip /tmp/QCLCD201507.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201508.zip /tmp/QCLCD201508.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201509.zip /tmp/QCLCD201509.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201510.zip /tmp/QCLCD201510.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201511.zip /tmp/QCLCD201511.zip
-#ADD https://www.ncdc.noaa.gov/orders/qclcd/QCLCD201512.zip /tmp/QCLCD201512.zip
-#
-#RUN unzip -o /tmp/wbanmasterlist.psv.zip && \
-#    gzip wbanmasterlist.psv && \
-#    rm -f /tmp/wbanmasterlist.psv.zip && \
-#    unzip -o /tmp/QCLCD201501.zip && \
-#    gzip 201501*.txt && \
-#    rm -f /tmp/QCLCD201501.zip && \
-#    unzip -o /tmp/QCLCD201502.zip && \
-#    gzip 201502*.txt && \
-#    rm -f /tmp/QCLCD201502.zip && \
-#    unzip -o /tmp/QCLCD201503.zip && \
-#    gzip 201503*.txt && \
-#    rm -f /tmp/QCLCD201503.zip && \
-#    unzip -o /tmp/QCLCD201504.zip && \
-#    gzip 201504*.txt && \
-#    rm -f /tmp/QCLCD201504.zip && \
-#    unzip -o /tmp/QCLCD201505.zip && \
-#    gzip 201505*.txt && \
-#    rm -f /tmp/QCLCD201505.zip && \
-#    unzip -o /tmp/QCLCD201506.zip && \
-#    gzip 201506*.txt && \
-#    rm -f /tmp/QCLCD201506.zip && \
-#    unzip -o /tmp/QCLCD201507.zip && \
-#    gzip 201507*.txt && \
-#    rm -f /tmp/QCLCD201507.zip && \
-#    unzip -o /tmp/QCLCD201508.zip && \
-#    gzip 201508*.txt && \
-#    rm -f /tmp/QCLCD201508.zip && \
-#    unzip -o /tmp/QCLCD201509.zip && \
-#    gzip 201509*.txt && \
-#    rm -f /tmp/QCLCD201509.zip && \
-#    unzip -o /tmp/QCLCD201510.zip && \
-#    gzip 201510*.txt && \
-#    rm -f /tmp/QCLCD201510.zip && \
-#    unzip -o /tmp/QCLCD201511.zip && \
-#    gzip 201511*.txt && \
-#    rm -f /tmp/QCLCD201511.zip && \
-#    unzip -o /tmp/QCLCD201512.zip && \
-#    gzip 201512*.txt && \
-#    rm -f /tmp/QCLCD201512.zip
 
 # Back to /root
 WORKDIR /root
