@@ -1,14 +1,13 @@
 # Setup an environment for running this book's examples
 
-FROM ubuntu
-MAINTAINER Russell Jurney, russell.jurney@gmail.com
-
+FROM ubuntu:18.04
+ENV TZ=Europe/Kiev
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /root
 
 # Update apt-get and install things
 RUN apt-get autoclean
-RUN apt-get update && \
-    apt-get install -y zip unzip curl bzip2 python-dev build-essential git libssl1.0.0 libssl-dev vim
+RUN apt-get update && apt-get install --no-install-recommends -y zip unzip curl bzip2 python-dev build-essential git libssl1.1 libssl-dev vim
 
 # Setup Oracle Java8
 RUN apt-get install -y software-properties-common debconf-utils && \
@@ -46,7 +45,7 @@ ENV HADOOP_CONF_DIR=/root/hadoop/etc/hadoop
 #
 # Install Spark: may need to update this link... see http://spark.apache.org/downloads.html
 #
-ADD http://mirror.navercorp.com/apache/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz .
+ADD https://archive.apache.org/dist/spark/spark-2.4.6/spark-2.4.6-bin-hadoop2.7.tgz .
 RUN mkdir -p /root/spark && \
     tar -xvf spark-2.4.6-bin-hadoop2.7.tgz -C spark --strip-components=1
 ENV SPARK_HOME=/root/spark
@@ -122,7 +121,7 @@ RUN curl -LO https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-spar
 # Install and setup Kafka
 #
 WORKDIR /root
-ADD http://mirror.navercorp.com/apache/kafka/2.5.0/kafka_2.12-2.5.0.tgz .
+ADD http://mirrors.ibiblio.org/apache/kafka/2.5.0/kafka_2.12-2.5.0.tgz .
 RUN mkdir -p /root/kafka && \
     tar -xvzf kafka_2.12-2.5.0.tgz -C kafka --strip-components=1
 
@@ -148,7 +147,7 @@ RUN pip install airflow && \
 # Install and setup Zeppelin
 #
 WORKDIR /root
-ADD http://apache.mirror.cdnetworks.com/zeppelin/zeppelin-0.9.0-preview1/zeppelin-0.9.0-preview1-bin-all.tgz /tmp/zeppelin-0.9.0-preview1-bin-all.tgz
+ADD https://archive.apache.org/dist/zeppelin/zeppelin-0.9.0-preview1/zeppelin-0.9.0-preview1-bin-all.tgz /tmp/zeppelin-0.9.0-preview1-bin-all.tgz
 RUN mkdir -p /root/zeppelin && \
     tar -xvzf /tmp/zeppelin-0.9.0-preview1-bin-all.tgz -C zeppelin --strip-components=1 && \
     rm -f /tmp/zeppelin-0.9.0-preview1-bin-all.tgz
